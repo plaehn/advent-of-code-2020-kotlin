@@ -21,6 +21,13 @@ class ReportRepairerTest {
     }
 
     @Test
+    fun `Null is returned if no code could be found`() {
+        val input = setOf(1, 2, 3)
+        val code = ReportRepairer().fixExpenseReport(subsetSize = 3, input)
+        assertThat(code).isNull()
+    }
+
+    @Test
     fun `Multiply on empty iterable throws`() {
         val numbers: List<Int> = listOf()
         assertFailsWith<UnsupportedOperationException> { numbers.product() }

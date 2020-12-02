@@ -4,18 +4,13 @@ import com.google.common.collect.Sets
 
 class ReportRepairer {
 
-    fun fixExpenseReport(subsetSize: Int, numbers: Set<Int>): Int {
-        val subsets = numbers.combinations(ofSize = subsetSize)
-        for (subset in subsets) {
-            if (subset.sum() == 2020) {
-                return subset.product()
-            }
-        }
-        throw NoSolutionException()
-    }
+    fun fixExpenseReport(subsetSize: Int, numbers: Set<Int>): Int? =
+            numbers.combinations(ofSize = subsetSize)
+                    .filter { it.sum() == 2020 }
+                    .map { it.product() }
+                    .firstOrNull()
 }
 
 fun <E> Set<E>.combinations(ofSize: Int): Set<Set<E>> = Sets.combinations(this, ofSize)
 
 fun Iterable<Int>.product(): Int = this.reduce(Int::times)
-
