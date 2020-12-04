@@ -2,7 +2,7 @@ package org.plaehn.adventofcode.day3
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.plaehn.adventofcode.day1.product
+import org.plaehn.adventofcode.common.product
 import org.plaehn.adventofcode.day3.MapWithTrees.TerrainType.*
 
 class MapWithTreesTest {

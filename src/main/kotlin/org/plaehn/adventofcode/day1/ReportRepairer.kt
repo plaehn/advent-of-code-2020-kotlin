@@ -1,6 +1,7 @@
 package org.plaehn.adventofcode.day1
 
-import com.google.common.collect.Sets
+import org.plaehn.adventofcode.common.combinations
+import org.plaehn.adventofcode.common.product
 
 class ReportRepairer {
 
@@ -11,10 +12,3 @@ class ReportRepairer {
                     .firstOrNull()
 }
 
-// XXX move to common
-
-fun <E> Set<E>.combinations(ofSize: Int): Set<Set<E>> = Sets.combinations(this, ofSize)
-
-fun Iterable<Int>.product(): Int = this.reduce(Int::times)
-
-fun Iterable<Long>.product(): Long = this.reduce(Long::times)
