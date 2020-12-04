@@ -23,25 +23,25 @@ class MapWithTreesTest {
 
     @Test
     fun `Terrain at position within input map is correct`() {
-        assertThat(mapWithTrees.terrainAt(x = 0, y = 0)).isEqualTo(OPEN)
-        assertThat(mapWithTrees.terrainAt(x = 0, y = 1)).isEqualTo(TREE)
-        assertThat(mapWithTrees.terrainAt(x = 10, y = 0)).isEqualTo(OPEN)
-        assertThat(mapWithTrees.terrainAt(x = 10, y = 10)).isEqualTo(TREE)
+        assertThat(mapWithTrees.terrainAt(Position(x = 0, y = 0))).isEqualTo(OPEN)
+        assertThat(mapWithTrees.terrainAt(Position(x = 0, y = 1))).isEqualTo(TREE)
+        assertThat(mapWithTrees.terrainAt(Position(x = 10, y = 0))).isEqualTo(OPEN)
+        assertThat(mapWithTrees.terrainAt(Position(x = 10, y = 10))).isEqualTo(TREE)
     }
 
     @Test
     fun `Terrain below input rows is END_OF_MAP`() {
-        assertThat(mapWithTrees.terrainAt(x = 0, y = 11)).isEqualTo(END_OF_MAP)
-        assertThat(mapWithTrees.terrainAt(x = 2, y = 11)).isEqualTo(END_OF_MAP)
+        assertThat(mapWithTrees.terrainAt(Position(x = 0, y = 11))).isEqualTo(END_OF_MAP)
+        assertThat(mapWithTrees.terrainAt(Position(x = 2, y = 11))).isEqualTo(END_OF_MAP)
     }
 
     @Test
     fun `Terrain right of input rows is projected correctly`() {
-        assertThat(mapWithTrees.terrainAt(x = 11, y = 0)).isEqualTo(OPEN)
-        assertThat(mapWithTrees.terrainAt(x = 12, y = 0)).isEqualTo(OPEN)
-        assertThat(mapWithTrees.terrainAt(x = 13, y = 0)).isEqualTo(TREE)
-        assertThat(mapWithTrees.terrainAt(x = 14, y = 0)).isEqualTo(TREE)
-        assertThat(mapWithTrees.terrainAt(x = 15, y = 0)).isEqualTo(OPEN)
+        assertThat(mapWithTrees.terrainAt(Position(x = 11, y = 0))).isEqualTo(OPEN)
+        assertThat(mapWithTrees.terrainAt(Position(x = 12, y = 0))).isEqualTo(OPEN)
+        assertThat(mapWithTrees.terrainAt(Position(x = 13, y = 0))).isEqualTo(TREE)
+        assertThat(mapWithTrees.terrainAt(Position(x = 14, y = 0))).isEqualTo(TREE)
+        assertThat(mapWithTrees.terrainAt(Position(x = 15, y = 0))).isEqualTo(OPEN)
     }
 
     @Test

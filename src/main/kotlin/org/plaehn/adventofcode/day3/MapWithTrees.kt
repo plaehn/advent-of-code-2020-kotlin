@@ -10,21 +10,21 @@ data class MapWithTrees(val rows: List<List<TerrainType>>) {
 
     private val width = rows[0].count()
 
-    fun terrainAt(x: Int, y: Int): TerrainType {
-        if (y >= rows.count()) {
+    fun terrainAt(position: Position): TerrainType {
+        if (position.y >= rows.count()) {
             return END_OF_MAP
         }
 
-        val projectedIndex = x % width
-        return rows[y][projectedIndex]
+        val projectedIndex = position.x % width
+        return rows[position.y][projectedIndex]
     }
 
     fun computePath(slope: Slope): List<TerrainType> {
         var path = mutableListOf<TerrainType>()
         var position = Position(0, 0)
         do {
-            position = Position(position.x + slope.right, position.y + slope.down)
-            path.add(terrainAt(position.x, position.y))
+            position += slope
+            path.add(terrainAt(position))
         } while (path.last() != END_OF_MAP)
         return path.dropLast(1)
     }
@@ -43,4 +43,7 @@ data class MapWithTrees(val rows: List<List<TerrainType>>) {
 
 data class Slope(val right: Int, val down: Int)
 
-data class Position(val x: Int, val y: Int)
+data class Position(val x: Int, val y: Int) {
+    operator fun plus(slope: Slope): Position = Position(this.x + slope.right, this.y + slope.down)
+}
+
