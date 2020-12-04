@@ -11,6 +11,10 @@ class ReportRepairer {
                     .firstOrNull()
 }
 
+// XXX move to common
+
 fun <E> Set<E>.combinations(ofSize: Int): Set<Set<E>> = Sets.combinations(this, ofSize)
 
 fun Iterable<Int>.product(): Int = this.reduce(Int::times)
+
+fun Iterable<Long>.product(): Long = this.reduce(Long::times)
