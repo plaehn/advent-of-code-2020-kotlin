@@ -1,17 +1,16 @@
 package org.plaehn.adventofcode.day4
 
+import org.plaehn.adventofcode.common.groupByBlankLines
+import org.plaehn.adventofcode.common.tokenize
+
 object PassportScanner {
 
     fun scan(input: String): List<Passport> = input.groupByBlankLines().map { toPassword(it) }
 
-    private fun toPassword(passportString: String): Passport = Passport(
+    private fun toPassword(passportString: String) = Passport(
             fields = passportString
                     .tokenize()
-                    .map { Passport.PassportField.fromKeyValueString(it) }
+                    .map { PassportField.fromKeyValueString(it) }
     )
 }
-
-private fun String.tokenize(): List<String> = this.split("\\s+".toRegex()).filter { it.isNotBlank() }
-
-private fun String.groupByBlankLines(): List<String> = this.split("\r\n\\s*\r\n".toRegex())
 

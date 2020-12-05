@@ -2,7 +2,6 @@ package org.plaehn.adventofcode.day4
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.plaehn.adventofcode.day4.Passport.PassportField
 import org.plaehn.adventofcode.day4.PassportFieldKey.*
 
 class PassportScannerTest {
