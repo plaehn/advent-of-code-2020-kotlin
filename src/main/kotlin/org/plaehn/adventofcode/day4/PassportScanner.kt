@@ -14,3 +14,4 @@ object PassportScanner {
 private fun String.splitIntoKeyValueStrings(): List<String> = this.split("\\s+".toRegex()).filter { it.isNotBlank() }
 
 private fun String.groupByBlankLines(): List<String> = this.split("\r\n\\s*\r\n".toRegex())
+
