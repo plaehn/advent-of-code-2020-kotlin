@@ -6,12 +6,12 @@ object PassportScanner {
 
     private fun toPassword(passportString: String): Passport = Passport(
             fields = passportString
-                    .splitIntoKeyValueStrings()
-                    .map { Passport.Field.fromKeyValueString(it) }
+                    .tokenize()
+                    .map { Passport.PassportField.fromKeyValueString(it) }
     )
 }
 
-private fun String.splitIntoKeyValueStrings(): List<String> = this.split("\\s+".toRegex()).filter { it.isNotBlank() }
+private fun String.tokenize(): List<String> = this.split("\\s+".toRegex()).filter { it.isNotBlank() }
 
 private fun String.groupByBlankLines(): List<String> = this.split("\r\n\\s*\r\n".toRegex())
 

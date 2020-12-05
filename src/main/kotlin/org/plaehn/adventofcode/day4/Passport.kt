@@ -1,18 +1,21 @@
 package org.plaehn.adventofcode.day4
 
-data class Passport(val fields: List<Field>) {
+import org.plaehn.adventofcode.day4.PassportFieldKey.COUNTRY_ID
 
-    private val requiredKeys = setOf("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
+data class Passport(val fields: List<PassportField>) {
 
-    fun isValid(): Boolean = fields.map { it.key }.containsAll(requiredKeys)
+    private val requiredKeys = PassportFieldKey.values().subtract(setOf(COUNTRY_ID))
 
-    data class Field(val key: String, val value: String) {
+    fun hasAllRequiredFields(): Boolean = fields.map { it.key }.containsAll(requiredKeys)
+
+    fun isValid(): Boolean = fields.all { it.key.isValid(it.value) }
+
+    data class PassportField(val key: PassportFieldKey, val value: String) {
         companion object {
-            fun fromKeyValueString(input: String): Field {
+            fun fromKeyValueString(input: String): PassportField {
                 val tokens = input.split(":")
-                return Field(key = tokens[0], value = tokens[1])
+                return PassportField(key = PassportFieldKey.from(shortForm = tokens[0]), value = tokens[1])
             }
         }
     }
-
 }
