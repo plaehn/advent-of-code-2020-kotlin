@@ -11,12 +11,19 @@ class StringExtKtTest {
     }
 
     @Test
+    fun `Count tokens`() {
+        assertThat("A \r\nwee \t \ttest".countTokens()).isEqualTo(3)
+    }
+
+    @Test
     fun `GroupByBlankLines works for CR LF`() {
         assertThat("A\r\n\r\nwee\r\n  \r\ntest".groupByBlankLines()).containsExactly("A", "wee", "test")
     }
 
     @Test
-    fun `Count unique chars`() {
-        assertThat("aaabbccabc".countUniqueChars()).isEqualTo(3)
+    fun `Count chars appearing n times`() {
+        assertThat("daaabbcecabcf".countCharsAppearing(ntimes = 3)).isEqualTo(2)
+        assertThat("daaabbcecabcf".countCharsAppearing(ntimes = 1)).isEqualTo(3)
+        assertThat("daaabbcecabcf".countCharsAppearing(ntimes = 4)).isEqualTo(1)
     }
 }

@@ -6,17 +6,31 @@ import org.junit.Test
 class AnswerCounterTest {
 
     @Test
-    fun `Count answers in small input`() {
-        val numberOfAnswers = AnswerCounter.countAnswers(input = readInput("small_input.txt"))
+    fun `Count answers from anyone in group using small input`() {
+        val numberOfAnswers = AnswerCounter.countAnswersFromAnyoneInGroup(input = readInput("small_input.txt"))
 
         assertThat(numberOfAnswers).isEqualTo(11)
     }
 
     @Test
-    fun `Count answers in large input`() {
-        val numberOfAnswers = AnswerCounter.countAnswers(input = readInput("input.txt"))
+    fun `Count answers from anyone in group using large input`() {
+        val numberOfAnswers = AnswerCounter.countAnswersFromAnyoneInGroup(input = readInput("input.txt"))
 
         assertThat(numberOfAnswers).isEqualTo(6726)
+    }
+
+    @Test
+    fun `Count answers from everyone in group using small input`() {
+        val numberOfAnswers = AnswerCounter.countAnswersFromEveryoneInGroup(input = readInput("small_input.txt"))
+
+        assertThat(numberOfAnswers).isEqualTo(6)
+    }
+
+    @Test
+    fun `Count answers from everyone in group using large input`() {
+        val numberOfAnswers = AnswerCounter.countAnswersFromEveryoneInGroup(input = readInput("input.txt"))
+
+        assertThat(numberOfAnswers).isEqualTo(3316)
     }
 
     private fun readInput(resourceName: String): String =

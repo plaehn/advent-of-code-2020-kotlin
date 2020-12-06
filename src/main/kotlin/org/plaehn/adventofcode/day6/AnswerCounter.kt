@@ -1,12 +1,20 @@
 package org.plaehn.adventofcode.day6
 
+import org.plaehn.adventofcode.common.countCharsAppearing
+import org.plaehn.adventofcode.common.countTokens
 import org.plaehn.adventofcode.common.countUniqueChars
 import org.plaehn.adventofcode.common.groupByBlankLines
 
 object AnswerCounter {
 
-    fun countAnswers(input: String): Int = input
+    fun countAnswersFromAnyoneInGroup(input: String): Int = input
             .groupByBlankLines()
-            .map { group -> group.filter { it in 'a'..'z' } }
-            .fold(0) { count, group -> count + group.countUniqueChars() }
+            .fold(0) { answerCount, group -> answerCount + group.filter { it in 'a'..'z' }.countUniqueChars() }
+
+    fun countAnswersFromEveryoneInGroup(input: String): Int = input
+            .groupByBlankLines()
+            .fold(0) { answerCount, group ->
+                answerCount + group.filter { it in 'a'..'z' }.countCharsAppearing(ntimes = group.countTokens())
+            }
 }
+
