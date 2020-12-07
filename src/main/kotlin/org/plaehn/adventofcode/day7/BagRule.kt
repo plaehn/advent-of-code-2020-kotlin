@@ -2,7 +2,7 @@ package org.plaehn.adventofcode.day7
 
 import org.plaehn.adventofcode.common.tokenize
 
-class BagRule(val container: Bag, val canContain: List<BagCount>) {
+data class BagRule(val container: Bag, val canContain: List<BagCount>) {
 
     companion object {
         fun fromString(input: String): BagRule {
@@ -17,15 +17,15 @@ class BagRule(val container: Bag, val canContain: List<BagCount>) {
     }
 
     override fun toString(): String {
-        var containString = canContain.joinToString(separator = ", ")
-        if (containString.isEmpty()) {
-            containString = "no other bags"
+        var canContainString = canContain.joinToString(separator = ", ")
+        if (canContainString.isEmpty()) {
+            canContainString = "no other bags"
         }
-        return "${container}s contain $containString."
+        return "${container}s contain $canContainString."
     }
 }
 
-class Bag(val modifier: String, val color: String) {
+data class Bag(val modifier: String, val color: String) {
 
     companion object {
         fun fromString(input: String): Bag {
@@ -39,7 +39,7 @@ class Bag(val modifier: String, val color: String) {
     }
 }
 
-class BagCount(val number: Int, val bag: Bag) {
+data class BagCount(val number: Int, val bag: Bag) {
 
     companion object {
         fun fromString(input: String): BagCount {
@@ -49,6 +49,6 @@ class BagCount(val number: Int, val bag: Bag) {
     }
 
     override fun toString(): String {
-        return "$number ${bag}"
+        return "$number $bag"
     }
 }
