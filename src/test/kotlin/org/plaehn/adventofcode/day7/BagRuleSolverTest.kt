@@ -11,16 +11,22 @@ class BagRuleSolverTest {
     fun `Count bags that can transitively contain shiny gold bag for small input`() {
         val rules = readInput("small_input.txt").map { BagRule.fromString(it) }
 
-        val result = BagRuleSolver(rules).canContainTransitively(shinyGoldBag)
+        val result = BagRuleSolverGraph(rules).canContainTransitively(shinyGoldBag)
 
-        assertThat(result.count()).isEqualTo(4)
+        println(result)
+        assertThat(result).containsExactlyInAnyOrder(
+                Bag(modifier = "dark", color = "orange"),
+                Bag(modifier = "muted", color = "yellow"),
+                Bag(modifier = "light", color = "red"),
+                Bag(modifier = "bright", color = "white")
+        )
     }
 
     @Test
     fun `Count bags that can transitively contain shiny gold bag for large input`() {
         val rules = readInput("input.txt").map { BagRule.fromString(it) }
 
-        val result = BagRuleSolver(rules).canContainTransitively(shinyGoldBag)
+        val result = BagRuleSolverGraph(rules).canContainTransitively(shinyGoldBag)
 
         assertThat(result.count()).isEqualTo(257)
     }
@@ -29,7 +35,7 @@ class BagRuleSolverTest {
     fun `Count bags that are contained in shiny gold bag for small input`() {
         val rules = readInput("small_input.txt").map { BagRule.fromString(it) }
 
-        val result = BagRuleSolver(rules).countContainedBags(shinyGoldBag)
+        val result = BagRuleSolverGraph(rules).countContainedBags(shinyGoldBag)
 
         assertThat(result).isEqualTo(32)
     }
@@ -38,7 +44,7 @@ class BagRuleSolverTest {
     fun `Count bags that are contained in shiny gold bag for another small input`() {
         val rules = readInput("another_small_input.txt").map { BagRule.fromString(it) }
 
-        val result = BagRuleSolver(rules).countContainedBags(shinyGoldBag)
+        val result = BagRuleSolverGraph(rules).countContainedBags(shinyGoldBag)
 
         assertThat(result).isEqualTo(126)
     }
@@ -47,13 +53,13 @@ class BagRuleSolverTest {
     fun `Count bags that are contained in shiny gold bag for large input`() {
         val rules = readInput("input.txt").map { BagRule.fromString(it) }
 
-        val result = BagRuleSolver(rules).countContainedBags(shinyGoldBag)
+        val result = BagRuleSolverGraph(rules).countContainedBags(shinyGoldBag)
 
         assertThat(result).isEqualTo(1038)
     }
 
     private fun readInput(resourceName: String): List<String> =
-            Bag::class.java
+            BagRuleSolverGraph::class.java
                     .getResource(resourceName)
                     .readText()
                     .lines()
