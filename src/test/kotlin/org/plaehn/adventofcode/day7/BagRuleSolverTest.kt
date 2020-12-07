@@ -5,22 +5,51 @@ import org.junit.Test
 
 class BagRuleSolverTest {
 
+    private val shinyGoldBag = Bag(modifier = "shiny", color = "gold")
+
     @Test
-    fun `Solve bag problem for small input`() {
+    fun `Count bags that can transitively contain shiny gold bag for small input`() {
         val rules = readInput("small_input.txt").map { BagRule.fromString(it) }
 
-        val result = BagRuleSolver(rules).canContainTransitively(Bag(modifier = "shiny", color = "gold"))
+        val result = BagRuleSolver(rules).canContainTransitively(shinyGoldBag)
 
         assertThat(result.count()).isEqualTo(4)
     }
 
     @Test
-    fun `Solve bag problem for large input`() {
+    fun `Count bags that can transitively contain shiny gold bag for large input`() {
         val rules = readInput("input.txt").map { BagRule.fromString(it) }
 
-        val result = BagRuleSolver(rules).canContainTransitively(Bag(modifier = "shiny", color = "gold"))
+        val result = BagRuleSolver(rules).canContainTransitively(shinyGoldBag)
 
         assertThat(result.count()).isEqualTo(257)
+    }
+
+    @Test
+    fun `Count bags that are contained in shiny gold bag for small input`() {
+        val rules = readInput("small_input.txt").map { BagRule.fromString(it) }
+
+        val result = BagRuleSolver(rules).countContainedBags(shinyGoldBag)
+
+        assertThat(result).isEqualTo(32)
+    }
+
+    @Test
+    fun `Count bags that are contained in shiny gold bag for another small input`() {
+        val rules = readInput("another_small_input.txt").map { BagRule.fromString(it) }
+
+        val result = BagRuleSolver(rules).countContainedBags(shinyGoldBag)
+
+        assertThat(result).isEqualTo(126)
+    }
+
+    @Test
+    fun `Count bags that are contained in shiny gold bag for large input`() {
+        val rules = readInput("input.txt").map { BagRule.fromString(it) }
+
+        val result = BagRuleSolver(rules).countContainedBags(shinyGoldBag)
+
+        assertThat(result).isEqualTo(1038)
     }
 
     private fun readInput(resourceName: String): List<String> =
