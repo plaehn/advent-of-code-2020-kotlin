@@ -8,7 +8,7 @@ class XmasDecoderTest {
     fun `Find first wrongly decoded number in small input`() {
         val input = readInput("small_input.txt")
 
-        val wronglyDecodedNumber = XmasDecoder(input = input, windowSize = 5).findFirstWronglyEncodedNumber()
+        val wronglyDecodedNumber = XmasDecoder(input, windowSize = 5).findFirstWronglyEncodedNumber()
 
         assertThat(wronglyDecodedNumber).isEqualTo(127)
     }
@@ -17,9 +17,27 @@ class XmasDecoderTest {
     fun `Find first wrongly decoded number in large input`() {
         val input = readInput("input.txt")
 
-        val wronglyDecodedNumber = XmasDecoder(input = input, windowSize = 25).findFirstWronglyEncodedNumber()
+        val wronglyDecodedNumber = XmasDecoder(input, windowSize = 25).findFirstWronglyEncodedNumber()
 
         assertThat(wronglyDecodedNumber).isEqualTo(776203571)
+    }
+
+    @Test
+    fun `Find encryption weakness in small input`() {
+        val input = readInput("small_input.txt")
+
+        val encryptionWeakness = XmasDecoder(input, windowSize = 5).findEncryptionWeakness()
+
+        assertThat(encryptionWeakness).isEqualTo(62)
+    }
+
+    @Test
+    fun `Find encryption weakness in large input`() {
+        val input = readInput("input.txt")
+
+        val encryptionWeakness = XmasDecoder(input, windowSize = 25).findEncryptionWeakness()
+
+        assertThat(encryptionWeakness).isEqualTo(104800569)
     }
 
     private fun readInput(resourceName: String): List<Long> =
