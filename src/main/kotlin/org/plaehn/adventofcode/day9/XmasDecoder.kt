@@ -4,20 +4,20 @@ import org.plaehn.adventofcode.common.combinations
 
 class XmasDecoder(val input: List<Long>, val windowSize: Int) {
 
-    fun findFirstWronglyEncodedNumber(): Long {
-        var targetIndex = windowSize
+    fun findFirstWronglyEncodedNumber(): Long = input[findIndexOfFirstWronglyEncodedNumber()]
 
-        do {
-            val window = computeWindow(targetIndex)
-            val pairsOfDifferentNumbers = window.combinations(ofSize = 2).filter { it.first() != it.last() }
-            val numberOfPairsAddingUpToTarget = pairsOfDifferentNumbers.count() { it.sum() == input[targetIndex] }
-            ++targetIndex
-        } while (numberOfPairsAddingUpToTarget > 0)
+    private fun findIndexOfFirstWronglyEncodedNumber(): Int =
+            indexRange()
+                    .find { index ->
+                        0 == pairsOfDifferentNumbers(windowStartingAt(index)).count { it.sum() == input[index] }
+                    } ?: 0
 
-        return input[targetIndex - 1]
-    }
+    private fun indexRange() = (windowSize..input.count() - windowSize)
 
-    private fun computeWindow(targetIndex: Int) = HashSet(input.subList(targetIndex - windowSize, targetIndex))
+    private fun windowStartingAt(targetIndex: Int) = HashSet(input.subList(targetIndex - windowSize, targetIndex))
+
+    private fun pairsOfDifferentNumbers(window: HashSet<Long>) =
+            window.combinations(ofSize = 2).filter { it.first() != it.last() }
 
     fun findEncryptionWeakness(): Long {
         val wronglyEncodedNumber = findFirstWronglyEncodedNumber()
