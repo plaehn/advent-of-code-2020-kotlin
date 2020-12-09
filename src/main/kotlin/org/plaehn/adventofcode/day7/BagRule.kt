@@ -44,7 +44,7 @@ data class BagCount(val number: Int, val bag: Bag) {
     companion object {
         fun fromString(input: String): BagCount {
             val tokens = input.tokenize()
-            return BagCount(number = Integer.parseInt(tokens[0]), Bag(modifier = tokens[1], color = tokens[2]))
+            return BagCount(number = tokens[0].toInt(), Bag(modifier = tokens[1], color = tokens[2]))
         }
     }
 
