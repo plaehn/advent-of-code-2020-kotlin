@@ -29,6 +29,30 @@ class JoltageDifferenceComputerTest {
         assertThat(product).isEqualTo(2738)
     }
 
+    @Test
+    fun `Count distinct valid arrangements for small input`() {
+        val computer = JoltageDifferenceComputer(readInput("small_input.txt"))
+        val numberOfValidArrangements = computer.countDistinctValidArrangements()
+
+        assertThat(numberOfValidArrangements).isEqualTo(8)
+    }
+
+    @Test
+    fun `Count distinct valid arrangements for medium input`() {
+        val computer = JoltageDifferenceComputer(readInput("medium_input.txt"))
+        val numberOfValidArrangements = computer.countDistinctValidArrangements()
+
+        assertThat(numberOfValidArrangements).isEqualTo(19208)
+    }
+
+    @Test
+    fun `Count distinct valid arrangements for large input`() {
+        val computer = JoltageDifferenceComputer(readInput("input.txt"))
+        val numberOfValidArrangements = computer.countDistinctValidArrangements()
+
+        assertThat(numberOfValidArrangements).isEqualTo(74049191673856)
+    }
+
     private fun readInput(resourceName: String): List<Int> =
             JoltageDifferenceComputer::class.java
                     .getResource(resourceName)
