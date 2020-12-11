@@ -1,6 +1,8 @@
 package org.plaehn.adventofcode.day11
 
-data class SeatLayout(val grid: Array<Array<CellType>>) {
+import org.plaehn.adventofcode.day11.SeatLayout.CellType.OCCUPIED_SEAT
+
+data class SeatLayout(internal val rows: List<List<CellType>>) {
 
     enum class CellType(val charRepresentation: Char) {
         FLOOR('.'),
@@ -15,22 +17,27 @@ data class SeatLayout(val grid: Array<Array<CellType>>) {
         }
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+    fun adjacentCells(rowIndex: Int, colIndex: Int): List<CellType> = sequence {
+        (-1..1).map { rowOffset ->
+            (-1..1).map { colOffset ->
+                if (rowOffset != 0 || colOffset != 0) {
+                    val adjacentRowIndex = rowIndex + rowOffset
+                    val adjacentColIndex = colIndex + colOffset
+                    if (isValidPosition(adjacentRowIndex, adjacentColIndex)) {
+                        val adjacentCell = rows[rowIndex + rowOffset][colIndex + colOffset]
+                        yield(adjacentCell)
+                    }
+                }
+            }
+        }
+    }.toList()
 
-        other as SeatLayout
+    private fun isValidPosition(rowIndex: Int, colIndex: Int): Boolean =
+            (0 until rows.count()).contains(rowIndex) && (0 until rows[0].count()).contains(colIndex)
 
-        if (!grid.contentDeepEquals(other.grid)) return false
+    fun countOccupiedSeats(): Int = rows.flatten().count { it == OCCUPIED_SEAT }
 
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return grid.contentDeepHashCode()
-    }
-
-    override fun toString(): String = grid
+    override fun toString(): String = rows
             .joinToString(separator = "\n") { row ->
                 row.map { cellType ->
                     cellType.charRepresentation
@@ -38,8 +45,8 @@ data class SeatLayout(val grid: Array<Array<CellType>>) {
             }
 
     companion object {
-        fun fromRowStrings(rows: List<String>) = SeatLayout(rows.map { toRow(it) }.toTypedArray())
+        fun fromRowStrings(rows: List<String>) = SeatLayout(rows.map { toRow(it) })
 
-        private fun toRow(row: String) = row.map { CellType.fromCharRepresentation(it) }.toTypedArray()
+        private fun toRow(row: String) = row.map { CellType.fromCharRepresentation(it) }
     }
 }
