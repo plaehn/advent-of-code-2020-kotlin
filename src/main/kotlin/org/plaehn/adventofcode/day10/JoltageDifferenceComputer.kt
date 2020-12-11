@@ -1,5 +1,6 @@
 package org.plaehn.adventofcode.day10
 
+import org.plaehn.adventofcode.common.fibonacci
 import org.plaehn.adventofcode.common.product
 
 class JoltageDifferenceComputer(adapterJoltages: List<Int>) {
@@ -22,19 +23,13 @@ class JoltageDifferenceComputer(adapterJoltages: List<Int>) {
 
         val chunks = chunkByEqualElements(joltageDifferences.asSequence()).toList()
 
-        val multipliers = chunks.map {
-            if (it.first() == 1) {
-                when (it.count()) {
-                    1 -> 1
-                    2 -> 2
-                    3 -> 4
-                    4 -> 7
-                    else -> throw IllegalStateException()
+        val factors = chunks
+                .map {
+                    if (it.first() == 1) fibonacci(it.count() + 2) - 1 else 1
                 }
-            } else 1
-        }.map { it.toLong() }
+                .map { it.toLong() }
 
-        return multipliers.product()
+        return factors.product()
     }
 
     private fun chunkByEqualElements(joltageDifferences: Sequence<Int>): Sequence<List<Int>> = sequence {
