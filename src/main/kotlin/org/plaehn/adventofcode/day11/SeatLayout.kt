@@ -1,5 +1,6 @@
 package org.plaehn.adventofcode.day11
 
+import org.plaehn.adventofcode.common.Position
 import org.plaehn.adventofcode.day11.SeatLayout.CellType.FLOOR
 import org.plaehn.adventofcode.day11.SeatLayout.CellType.OCCUPIED_SEAT
 
