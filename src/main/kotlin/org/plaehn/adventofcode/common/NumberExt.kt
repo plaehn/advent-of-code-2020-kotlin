@@ -13,3 +13,4 @@ fun IntRange.upperHalf(): IntRange = this.middle() + 1..this.last
 fun IntRange.middle(): Int = this.first + (this.last - this.first) / 2
 
 fun Int.withSign(sign: Int): Int = this.toDouble().withSign(sign).toInt()
+
