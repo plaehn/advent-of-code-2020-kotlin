@@ -2,14 +2,22 @@ package org.plaehn.adventofcode.day15
 
 class RambunctiousRecitation(private val startingNumbers: List<Int>) {
 
-    fun numberSpokenAt(turn: Int): Int {
-        val numbersSpoken = startingNumbers.toMutableList()
-        repeat(turn - startingNumbers.count()) {
-            val number = numbersSpoken.last()
-            val index = numbersSpoken.dropLast(1).lastIndexOf(number)
-            val newNumber = if (index < 0) 0 else numbersSpoken.count() - 1 - index
-            numbersSpoken.add(newNumber)
+    fun numberSpokenAt(lastTurn: Int): Int {
+        val lastSeenAtTurn = startingNumbers
+            .dropLast(1)
+            .withIndex()
+            .associate { it.value to it.index + 1 }
+            .toMutableMap()
+
+        var lastSpoken = startingNumbers.last()
+        var newNumber: Int = lastSpoken
+        (1 + startingNumbers.count()..lastTurn).forEach { turn ->
+            val index = lastSeenAtTurn[lastSpoken]
+            lastSeenAtTurn[newNumber] = turn - 1
+            newNumber = if (index == null) 0 else turn - index - 1
+            lastSpoken = newNumber
         }
-        return numbersSpoken.last()
+
+        return lastSpoken
     }
 }
