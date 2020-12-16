@@ -8,6 +8,14 @@ data class TicketValidator(
     val nearbyTickets: List<Ticket>
 ) {
 
+    fun computeTicketScanningErrorRate(): Int = nearbyTickets
+        .map { it.fieldValues }
+        .flatten()
+        .filter { fieldValue -> isInvalid(fieldValue) }
+        .sum()
+
+    private fun isInvalid(it: Int) = null == fields.find { field -> field.isValidValue(it) }
+
     companion object {
         fun fromString(input: String): TicketValidator {
             val groups = input.groupByBlankLines()
@@ -23,6 +31,8 @@ data class TicketValidator(
 
 data class Field(val name: String, val validRanges: List<IntRange>) {
 
+    fun isValidValue(value: Int): Boolean = null != validRanges.find { it.contains(value) }
+
     companion object {
         fun fromString(input: String): Field {
             val nameAndRanges = input.split(':')
@@ -37,11 +47,6 @@ data class Field(val name: String, val validRanges: List<IntRange>) {
     }
 }
 
-private fun String.toIntRange(): IntRange {
-    val fromAndTo = this.split("-")
-    return IntRange(fromAndTo[0].toInt(), fromAndTo[1].toInt())
-}
-
 data class Ticket(val fieldValues: List<Int>) {
 
     companion object {
@@ -51,4 +56,9 @@ data class Ticket(val fieldValues: List<Int>) {
                 .map { it.toInt() }
         )
     }
+}
+
+private fun String.toIntRange(): IntRange {
+    val fromAndTo = this.split("-")
+    return IntRange(fromAndTo[0].toInt(), fromAndTo[1].toInt())
 }
