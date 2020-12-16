@@ -9,31 +9,42 @@ class TicketValidator(
 ) {
 
     fun determineFieldMappingsForMyTicket(): Ticket {
-        val validNearbyTicketValues = nearbyTicketValues.filter {
-            it.fieldValues.all { fieldValue -> isValid(fieldValue) }
-        }
+        val validNearbyTicketValues = findValidNearbyTicketValues()
+        val valueToMatchingFieldValidators = mapValuesToMatchingFieldValidators(validNearbyTicketValues)
+        return Ticket(determineFieldMappings(valueToMatchingFieldValidators))
+    }
 
-        val valueToMatchingFieldValidators = myTicketValues.fieldValues
+    private fun findValidNearbyTicketValues() = nearbyTicketValues
+        .filter { it.fieldValues.all { fieldValue -> isValid(fieldValue) } }
+
+    private fun isValid(value: Int) = null != fieldValidators.find { field -> field.isValidValue(value) }
+
+    private fun mapValuesToMatchingFieldValidators(ticketValues: List<TicketValues>) =
+        myTicketValues.fieldValues
             .mapIndexed { index, value ->
-                val nearbyValuesAtIndex = validNearbyTicketValues.map { it.fieldValues[index] }
+                val nearbyValuesAtIndex = ticketValues.map { it.fieldValues[index] }
                 val matchingFieldValidators = fieldValidators.filter { fieldValidator ->
                     nearbyValuesAtIndex.all { fieldValidator.isValidValue(it) }
                 }
                 value to matchingFieldValidators.toMutableList()
             }
 
+
+    private fun determineFieldMappings(valueToMatchingFieldValidators: List<Pair<Int, MutableList<FieldValidator>>>)
+            : List<Pair<String, Int>> {
+
         val fieldMappings: MutableList<Pair<String, Int>> = mutableListOf()
 
         do {
-            val uniquelyMappedPairs = valueToMatchingFieldValidators.filter { it.second.count() == 1 }
-            uniquelyMappedPairs.forEach { uniquelyMapped ->
-                val validator = uniquelyMapped.second.first()
-                fieldMappings.add(validator.name to uniquelyMapped.first)
+            val pairsWithExactlyOneValidator = valueToMatchingFieldValidators.filter { it.second.count() == 1 }
+            pairsWithExactlyOneValidator.forEach { pairWithExactlyOneValidator ->
+                val validator = pairWithExactlyOneValidator.second.first()
+                fieldMappings.add(validator.name to pairWithExactlyOneValidator.first)
                 valueToMatchingFieldValidators.forEach { it.second.remove(validator) }
             }
         } while (fieldMappings.count() < fieldValidators.count())
 
-        return Ticket(fieldMappings)
+        return fieldMappings
     }
 
     fun computeTicketScanningErrorRate(): Int = nearbyTicketValues
@@ -41,8 +52,6 @@ class TicketValidator(
         .flatten()
         .filter { fieldValue -> !isValid(fieldValue) }
         .sum()
-
-    private fun isValid(it: Int) = null != fieldValidators.find { field -> field.isValidValue(it) }
 
     companion object {
         fun fromString(input: String): TicketValidator {
