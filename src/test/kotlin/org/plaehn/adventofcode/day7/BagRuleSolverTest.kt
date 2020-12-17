@@ -13,12 +13,11 @@ class BagRuleSolverTest {
 
         val result = BagRuleSolverGraph(rules).canContainTransitively(shinyGoldBag)
 
-        println(result)
         assertThat(result).containsExactlyInAnyOrder(
-                Bag(modifier = "dark", color = "orange"),
-                Bag(modifier = "muted", color = "yellow"),
-                Bag(modifier = "light", color = "red"),
-                Bag(modifier = "bright", color = "white")
+            Bag(modifier = "dark", color = "orange"),
+            Bag(modifier = "muted", color = "yellow"),
+            Bag(modifier = "light", color = "red"),
+            Bag(modifier = "bright", color = "white")
         )
     }
 
@@ -59,9 +58,9 @@ class BagRuleSolverTest {
     }
 
     private fun readInput(resourceName: String): List<String> =
-            BagRuleSolverGraph::class.java
-                    .getResource(resourceName)
-                    .readText()
-                    .lines()
-                    .filter { it.isNotBlank() }
+        BagRuleSolverGraph::class.java
+            .getResource(resourceName)
+            .readText()
+            .lines()
+            .filter { it.isNotBlank() }
 }
