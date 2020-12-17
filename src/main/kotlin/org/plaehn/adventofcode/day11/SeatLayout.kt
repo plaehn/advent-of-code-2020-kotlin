@@ -20,18 +20,11 @@ data class SeatLayout(internal val rows: List<List<CellType>>) {
     }
 
     fun adjacentSeats(currentPosition: Position, considerOnlyDirectlyAdjacentSeats: Boolean): List<CellType> =
-        sequence {
-            (-1..1).map { rowOffset ->
-                (-1..1).map { colOffset ->
-                    val trajectory = Position(rowOffset, colOffset)
-                    if (!trajectory.isCenter()) {
-                        findSeatAlong(
-                            trajectory, from = currentPosition, considerOnlyDirectlyAdjacentSeats
-                        )?.let { yield(it) }
-                    }
-                }
+        currentPosition
+            .neighborOffsets(threeDim = false)
+            .mapNotNull { trajectory ->
+                findSeatAlong(trajectory, from = currentPosition, considerOnlyDirectlyAdjacentSeats)
             }
-        }.toList()
 
     private fun findSeatAlong(
         trajectory: Position,

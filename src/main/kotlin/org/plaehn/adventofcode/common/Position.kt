@@ -8,12 +8,16 @@ data class Position(val x: Int, val y: Int, val z: Int = 0) {
 
     operator fun times(value: Int): Position = Position(x * value, y * value, z * value)
 
-    fun isCenter(): Boolean = x == 0 && y == 0 && z == 0
+    fun neighbors(threeDim: Boolean = true): List<Position> =
+        neighborOffsets(threeDim)
+            .map { offset -> this + offset }
+            .toList()
 
-    fun neighbors(): List<Position> = sequence<Position> {
+    fun neighborOffsets(threeDim: Boolean = true) = sequence<Position> {
+        val zRange = if (threeDim) (-1..1) else (0..0)
         (-1..1).forEach { xOffset ->
             (-1..1).forEach { yOffset ->
-                (-1..1).forEach { zOffset ->
+                zRange.forEach { zOffset ->
                     val offset = Position(xOffset, yOffset, zOffset)
                     if (!offset.isCenter()) {
                         yield(offset)
@@ -21,7 +25,7 @@ data class Position(val x: Int, val y: Int, val z: Int = 0) {
                 }
             }
         }
-    }.map { offset ->
-        this + offset
     }.toList()
+
+    private fun isCenter(): Boolean = x == 0 && y == 0 && z == 0
 }
