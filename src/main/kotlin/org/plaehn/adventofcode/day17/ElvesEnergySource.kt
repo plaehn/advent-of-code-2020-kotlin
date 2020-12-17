@@ -4,35 +4,24 @@ import org.plaehn.adventofcode.common.Position
 
 class ElvesEnergySource(private val initialGrid: Grid3D) {
 
-    fun countActiveCubesAfterBootProcess(numberOfCycles: Int): Int {
-        var grid = initialGrid
-        repeat(numberOfCycles) {
-            grid = computeNextGrid(grid)
+    fun countActiveCubesAfterBootProcess(numberOfCycles: Int): Int =
+        (1..numberOfCycles)
+            .fold(initialGrid) { currentGrid, _ -> computeNextGrid(currentGrid) }
+            .numberOfActiveCubes()
+
+    private fun computeNextGrid(grid: Grid3D) = Grid3D(
+        grid.enumerateCubesSpannedBy(grid.min() - Position(1, 1, 1), grid.max() + Position(1, 1, 1))
+            .map { position -> position to computeNewIsActive(position, grid) }
+            .toMap()
+    )
+
+    private fun computeNewIsActive(position: Position, grid: Grid3D): Boolean {
+        val numberOfActiveNeighbors = position.neighbors().count { grid.isActive(it) }
+        return if (grid.isActive(position)) {
+            (2..3).contains(numberOfActiveNeighbors)
+        } else {
+            numberOfActiveNeighbors == 3
         }
-        return grid.cubes.values.count { it }
-    }
-
-    private fun computeNextGrid(grid: Grid3D): Grid3D {
-        val min = grid.min() - Position(1, 1, 1)
-        val max = grid.max() + Position(1, 1, 1)
-
-        return Grid3D(sequence {
-            IntRange(min.x, max.x).forEach { x ->
-                IntRange(min.y, max.y).forEach { y ->
-                    IntRange(min.z, max.z).forEach { z ->
-                        val position = Position(x, y, z)
-                        val numberOfActiveNeighbors = position.neighbors().count { grid.isActive(it) }
-                        val newIsActive = if (grid.isActive(position)) {
-                            (2..3).contains(numberOfActiveNeighbors)
-                        } else {
-                            numberOfActiveNeighbors == 3
-                        }
-
-                        yield(position to newIsActive)
-                    }
-                }
-            }
-        }.toMap())
     }
 }
 
@@ -43,6 +32,18 @@ data class Grid3D(val cubes: Map<Position, Boolean>) {
     fun max(): Position = Position(cubes.keys.maxOf { it.x }, cubes.keys.maxOf { it.y }, cubes.keys.maxOf { it.z })
 
     fun isActive(position: Position): Boolean = cubes[position] ?: false
+
+    fun numberOfActiveCubes(): Int = cubes.values.count { it }
+
+    fun enumerateCubesSpannedBy(min: Position, max: Position): List<Position> = sequence {
+        IntRange(min.x, max.x).forEach { x ->
+            IntRange(min.y, max.y).forEach { y ->
+                IntRange(min.z, max.z).forEach { z ->
+                    yield(Position(x, y, z))
+                }
+            }
+        }
+    }.toList()
 
     companion object {
         fun from2DInput(lines: List<String>): Grid3D = Grid3D(
