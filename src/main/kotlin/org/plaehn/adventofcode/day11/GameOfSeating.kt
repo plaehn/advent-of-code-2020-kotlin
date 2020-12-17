@@ -1,6 +1,6 @@
 package org.plaehn.adventofcode.day11
 
-import org.plaehn.adventofcode.common.Position
+import org.plaehn.adventofcode.common.Vector
 import org.plaehn.adventofcode.day11.SeatLayout.CellType
 import org.plaehn.adventofcode.day11.SeatLayout.CellType.EMPTY_SEAT
 import org.plaehn.adventofcode.day11.SeatLayout.CellType.OCCUPIED_SEAT
@@ -27,7 +27,7 @@ class GameOfSeating(
         seatLayout.rows
             .mapIndexed { rowIndex, row ->
                 row.mapIndexed { colIndex, cellType ->
-                    val position = Position(x = colIndex, y = rowIndex)
+                    val position = Vector(colIndex, rowIndex)
                     val adjacentCells = seatLayout.adjacentSeats(position, considerOnlyDirectlyAdjacentSeats)
                     computeNewCellType(cellType, adjacentCells)
                 }
