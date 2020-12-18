@@ -1,5 +1,7 @@
 package org.plaehn.adventofcode.common
 
+import com.google.common.collect.Sets
+
 data class Vector(val values: List<Int>) {
 
     val x = values[0]
@@ -20,23 +22,16 @@ data class Vector(val values: List<Int>) {
 
     operator fun times(value: Int): Vector = Vector(values.map { it * value })
 
-    fun neighbors(): List<Vector> =
+    fun neighbors() =
         neighborOffsets()
             .map { offset -> this + offset }
             .toList()
 
-    fun neighborOffsets() = neighborOffsets(dimension()).filter { !it.isCenter() }
-
-    private fun neighborOffsets(dim: Int): List<Vector> {
-        if (dim == 1) return (-1..1).map { Vector(it) }
-        return sequence {
-            (-1..1).forEach { offset ->
-                neighborOffsets(dim - 1).forEach {
-                    yield(Vector(it.values + listOf(offset)))
-                }
-            }
-        }.toList()
-    }
+    fun neighborOffsets() =
+        Sets
+            .cartesianProduct(List(dimension()) { (-1..1).toSet() })
+            .map { Vector(it) }
+            .filter { !it.isCenter() }
 
     fun dimension(): Int = values.count()
 

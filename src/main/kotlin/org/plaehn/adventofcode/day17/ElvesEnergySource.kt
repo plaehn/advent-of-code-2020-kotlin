@@ -42,11 +42,10 @@ data class Grid(val cubes: Map<Vector, Boolean>) {
 
     fun numberOfActiveCubes(): Int = cubes.values.count { it }
 
-    fun enumerateCubesSpannedBy(min: Vector, max: Vector): List<Vector> {
-        val sets = (0 until dimension()).map { index -> (min[index]..max[index]).toSet() }
-        val cartesianProduct = Sets.cartesianProduct(sets)
-        return cartesianProduct.map { Vector(it) }
-    }
+    fun enumerateCubesSpannedBy(min: Vector, max: Vector) =
+        Sets
+            .cartesianProduct((0 until dimension()).map { (min[it]..max[it]).toSet() })
+            .map { Vector(it) }
 
     companion object {
         fun from2DInput(dimensions: Int, lines: List<String>): Grid = Grid(
