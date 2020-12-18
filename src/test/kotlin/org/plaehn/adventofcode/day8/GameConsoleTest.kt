@@ -1,7 +1,7 @@
 package org.plaehn.adventofcode.day8
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.plaehn.adventofcode.day8.GameConsole.CompletionType.INFINITE_LOOP
 import org.plaehn.adventofcode.day8.GameConsole.CompletionType.NORMAL
 import org.plaehn.adventofcode.day8.Instruction.*
@@ -13,15 +13,15 @@ class GameConsoleTest {
         val instructions = readInput("small_input.txt").map { Instruction.fromString(it) }
 
         assertThat(instructions).containsExactly(
-                NoOp(0),
-                Accumulator(1),
-                Jump(4),
-                Accumulator(3),
-                Jump(-3),
-                Accumulator(-99),
-                Accumulator(1),
-                Jump(-4),
-                Accumulator(6)
+            NoOp(0),
+            Accumulator(1),
+            Jump(4),
+            Accumulator(3),
+            Jump(-3),
+            Accumulator(-99),
+            Accumulator(1),
+            Jump(-4),
+            Accumulator(6)
         )
     }
 
@@ -62,9 +62,9 @@ class GameConsoleTest {
     }
 
     private fun readInput(resourceName: String): List<String> =
-            Instruction::class.java
-                    .getResource(resourceName)
-                    .readText()
-                    .lines()
-                    .filter { it.isNotBlank() }
+        Instruction::class.java
+            .getResource(resourceName)
+            .readText()
+            .lines()
+            .filter { it.isNotBlank() }
 }

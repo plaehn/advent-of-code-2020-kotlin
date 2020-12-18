@@ -1,7 +1,7 @@
 package org.plaehn.adventofcode.day16
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.plaehn.adventofcode.common.product
 
 class TicketValidatorTest {
@@ -38,7 +38,7 @@ class TicketValidatorTest {
         val validator = TicketValidator.fromString(readInput("input.txt"))
 
         val ticket = validator.determineFieldMappingsForMyTicket()
-        
+
         val productOfDepartureFields = ticket.fieldMappings
             .filter { it.first.startsWith("departure") }
             .map { it.second.toLong() }

@@ -1,7 +1,7 @@
 package org.plaehn.adventofcode.day10
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class JoltageDifferenceComputerTest {
 
@@ -54,10 +54,10 @@ class JoltageDifferenceComputerTest {
     }
 
     private fun readInput(resourceName: String): List<Int> =
-            JoltageDifferenceComputer::class.java
-                    .getResource(resourceName)
-                    .readText()
-                    .lines()
-                    .filter { it.isNotBlank() }
-                    .map { it.toInt() }
+        JoltageDifferenceComputer::class.java
+            .getResource(resourceName)
+            .readText()
+            .lines()
+            .filter { it.isNotBlank() }
+            .map { it.toInt() }
 }

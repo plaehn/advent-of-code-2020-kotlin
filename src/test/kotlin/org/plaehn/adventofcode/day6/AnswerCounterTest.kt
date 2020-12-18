@@ -1,7 +1,7 @@
 package org.plaehn.adventofcode.day6
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class AnswerCounterTest {
 
@@ -34,7 +34,7 @@ class AnswerCounterTest {
     }
 
     private fun readInput(resourceName: String): String =
-            AnswerCounter::class.java
-                    .getResource(resourceName)
-                    .readText()
+        AnswerCounter::class.java
+            .getResource(resourceName)
+            .readText()
 }

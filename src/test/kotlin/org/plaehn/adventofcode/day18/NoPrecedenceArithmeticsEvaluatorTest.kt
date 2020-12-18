@@ -2,7 +2,7 @@ package org.plaehn.adventofcode.day18
 
 import com.github.h0tk3y.betterParse.grammar.parseToEnd
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class NoPrecedenceArithmeticsEvaluatorTest {
 

@@ -1,5 +1,5 @@
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.plaehn.adventofcode.day9.XmasDecoder
 
 class XmasDecoderTest {
@@ -41,10 +41,10 @@ class XmasDecoderTest {
     }
 
     private fun readInput(resourceName: String): List<Long> =
-            XmasDecoder::class.java
-                    .getResource(resourceName)
-                    .readText()
-                    .lines()
-                    .filter { it.isNotBlank() }
-                    .map { it.toLong() }
+        XmasDecoder::class.java
+            .getResource(resourceName)
+            .readText()
+            .lines()
+            .filter { it.isNotBlank() }
+            .map { it.toLong() }
 }
