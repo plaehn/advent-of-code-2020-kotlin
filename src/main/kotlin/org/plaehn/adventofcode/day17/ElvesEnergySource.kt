@@ -1,21 +1,22 @@
 package org.plaehn.adventofcode.day17
 
+import com.google.common.collect.Sets
 import org.plaehn.adventofcode.common.Vector
 
-class ElvesEnergySource(private val initialGrid: Grid3D) {
+class ElvesEnergySource(private val initialGrid: Grid) {
 
     fun countActiveCubesAfterBootProcess(numberOfCycles: Int): Int =
         (1..numberOfCycles)
             .fold(initialGrid) { currentGrid, _ -> computeNextGrid(currentGrid) }
             .numberOfActiveCubes()
 
-    private fun computeNextGrid(grid: Grid3D) = Grid3D(
-        grid.enumerateCubesSpannedBy(grid.min() - Vector(1, 1, 1), grid.max() + Vector(1, 1, 1))
+    private fun computeNextGrid(grid: Grid) = Grid(
+        grid.enumerateCubesSpannedBy(grid.min() - 1, grid.max() + 1)
             .map { position -> position to computeNewIsActive(position, grid) }
             .toMap()
     )
 
-    private fun computeNewIsActive(position: Vector, grid: Grid3D): Boolean {
+    private fun computeNewIsActive(position: Vector, grid: Grid): Boolean {
         val numberOfActiveNeighbors = position.neighbors().count { grid.isActive(it) }
         return if (grid.isActive(position)) {
             (2..3).contains(numberOfActiveNeighbors)
@@ -25,33 +26,36 @@ class ElvesEnergySource(private val initialGrid: Grid3D) {
     }
 }
 
-data class Grid3D(val cubes: Map<Vector, Boolean>) {
+data class Grid(val cubes: Map<Vector, Boolean>) {
 
-    fun min(): Vector = Vector(cubes.keys.minOf { it.x }, cubes.keys.minOf { it.y }, cubes.keys.minOf { it.z })
+    fun min(): Vector = Vector((0 until dimension())
+                                   .map { index -> cubes.keys.minOf { vector -> vector[index] } }
+                                   .toList())
 
-    fun max(): Vector = Vector(cubes.keys.maxOf { it.x }, cubes.keys.maxOf { it.y }, cubes.keys.maxOf { it.z })
+    fun max(): Vector = Vector((0 until dimension())
+                                   .map { index -> cubes.keys.maxOf { vector -> vector[index] } }
+                                   .toList())
+
+    private fun dimension(): Int = cubes.keys.first().dimension()
 
     fun isActive(position: Vector): Boolean = cubes[position] ?: false
 
     fun numberOfActiveCubes(): Int = cubes.values.count { it }
 
-    fun enumerateCubesSpannedBy(min: Vector, max: Vector): List<Vector> = sequence {
-        IntRange(min.x, max.x).forEach { x ->
-            IntRange(min.y, max.y).forEach { y ->
-                IntRange(min.z, max.z).forEach { z ->
-                    yield(Vector(x, y, z))
-                }
-            }
-        }
-    }.toList()
+    fun enumerateCubesSpannedBy(min: Vector, max: Vector): List<Vector> {
+        val sets = (0 until dimension()).map { index -> (min[index]..max[index]).toSet() }
+        val cartesianProduct = Sets.cartesianProduct(sets)
+        return cartesianProduct.map { Vector(it) }
+    }
 
     companion object {
-        fun from2DInput(lines: List<String>): Grid3D = Grid3D(
+        fun from2DInput(dimensions: Int, lines: List<String>): Grid = Grid(
             sequence {
                 lines.forEachIndexed { x, line ->
                     line.forEachIndexed { y, state ->
                         val active = state == '#'
-                        yield(Vector(x, y, 0) to active)
+                        val vector = Vector(listOf(x, y) + List(dimensions - 2) { 0 })
+                        yield(vector to active)
                     }
                 }
             }.toMap()

@@ -12,7 +12,11 @@ data class Vector(val values: List<Int>) {
 
     operator fun plus(other: Vector): Vector = Vector(values.zip(other.values) { v1, v2 -> v1 + v2 })
 
+    operator fun plus(value: Int): Vector = Vector(values.map { it + value })
+
     operator fun minus(other: Vector): Vector = Vector(values.zip(other.values) { v1, v2 -> v1 - v2 })
+
+    operator fun minus(value: Int): Vector = Vector(values.map { it - value })
 
     operator fun times(value: Int): Vector = Vector(values.map { it * value })
 
@@ -34,7 +38,7 @@ data class Vector(val values: List<Int>) {
         }.toList()
     }
 
-    private fun dimension(): Int = values.count()
+    fun dimension(): Int = values.count()
 
     private fun isCenter(): Boolean = values.all { it == 0 }
 }
