@@ -16,6 +16,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>betterparse</id>
+            <name>BetterParseRepo</name>
+            <url>https://dl.bintray.com/hotkeytlt/maven</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -32,6 +40,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>29.0-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.h0tk3y.betterParse</groupId>
+            <artifactId>better-parse-jvm</artifactId>
+            <version>0.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
