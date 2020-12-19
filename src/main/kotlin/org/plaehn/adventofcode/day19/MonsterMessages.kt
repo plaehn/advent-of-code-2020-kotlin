@@ -7,8 +7,13 @@ data class MonsterMessages(
     private val messages: List<String>
 ) {
 
-    fun countNumberOfValidMessages(): Int {
-        val rulesByNumber = rules.associateBy { it.number }
+    fun countNumberOfValidMessages(replacements: List<Rule> = emptyList()): Int {
+        val rulesByNumber = rules.associateBy { it.number }.toMutableMap()
+
+        replacements.forEach { replacement ->
+            rulesByNumber[replacement.number] = replacement
+        }
+
         var regexString = rulesByNumber[0]!!.regexString
 
         do {

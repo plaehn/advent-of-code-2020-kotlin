@@ -32,6 +32,30 @@ class MonsterMessagesTest {
         assertThat(numberOfValidMessages).isEqualTo(224)
     }
 
+    @Test
+    fun `Count number of valid messages with replacement rules in large input`() {
+        val monsterMessages = MonsterMessages.fromString(readInput("input.txt"))
+
+        // 8: 42 | 42 8
+        // 11: 42 31 | 42 11 31
+        val replacements = listOf(
+            Rule(8, "( ( 42 )+ )"),
+            Rule(
+                // This is good enough
+                11, "( ( 42 31 ) " +
+                        "| ( 42 42 31 31 ) " +
+                        "| ( 42 42 42 31 31 31 ) " +
+                        "| ( 42 42 42 42 31 31 31 31 ) " +
+                        "| ( 42 42 42 42 42 31 31 31 31 31 ) " +
+                        ")"
+            )
+        )
+
+        val numberOfValidMessages = monsterMessages.countNumberOfValidMessages(replacements)
+
+        assertThat(numberOfValidMessages).isEqualTo(436)
+    }
+
     private fun readInput(resourceName: String): String =
         MonsterMessages::class.java
             .getResource(resourceName)
