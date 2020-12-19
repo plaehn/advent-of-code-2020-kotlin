@@ -47,5 +47,4 @@ class ElvesEnergySourceTest {
             .readText()
             .lines()
             .filter { it.isNotBlank() }
-
 }
