@@ -8,21 +8,31 @@ data class MonsterMessages(
 ) {
 
     fun countNumberOfValidMessages(): Int {
-        val words = enumerateWords()
-        return messages.count { words.contains(it) }
-    }
+        val rulesByNumber = rules.associateBy { it.number }
+        var regexString = rulesByNumber[0]!!.regexString
 
-    private fun enumerateWords(): Set<String> {
-        val rulesByNumber = rules.associateBy { it.number }.toMutableMap()
         do {
-            val lexicalRules = rules.find { it.hasOnlyStringRuleParts() }
-        } while (true)
-        TODO()
+            val tokens = regexString.split('(', ')', ' ', '|')
+            tokens.forEach { token ->
+                if (token.matches(numberRegex)) {
+                    val ruleNumber = token.toInt()
+                    val rule = rulesByNumber[ruleNumber]!!
+                    regexString = regexString.replace(" $token ", " " + rule.regexString + " ")
+                }
+            }
+        } while (regexString.contains(numberRegex))
+
+        val regex = regexString.replace(" ", "").toRegex()
+
+        return messages.count { regex.matches(it) }
     }
 
     override fun toString() = "${rules.joinToString("\n")}\n\n${messages.joinToString("\n")}"
 
     companion object {
+
+        private val numberRegex = "[0-9]+".toRegex()
+
         fun fromString(input: String): MonsterMessages {
             val groups = input.groupByBlankLines()
             val rules = groups[0].lines().map { Rule.fromString(it) }
@@ -34,46 +44,17 @@ data class MonsterMessages(
 
 data class Rule(
     val number: Int,
-    val alternatives: List<List<RulePart>>
+    val regexString: String
 ) {
-
-    fun hasOnlyStringRuleParts(): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun toString(): String = "$number: ${alternatives.joinToString(" | ") { it.joinToString(" ") }}"
+    override fun toString(): String = "$number: $regexString"
 
     companion object {
         fun fromString(input: String): Rule {
-            val ruleNumberAndParts = input.split(":")
-            val ruleNumber = ruleNumberAndParts[0].toInt()
-            val alternativeStrings = ruleNumberAndParts[1].trim().split("|")
-
-            val alternatives = alternativeStrings.map { alternative ->
-                alternative.trim().split(" ").map { RulePart.fromString(it) }
-            }
-
-            return Rule(ruleNumber, alternatives)
+            val numberAndRegex = input.split(":")
+            val number = numberAndRegex[0].toInt()
+            val regex = numberAndRegex[1].trim().removePrefix("\"").removeSuffix("\"")
+            return Rule(number, "( $regex )")
         }
     }
-}
-
-sealed class RulePart {
-    companion object {
-        fun fromString(input: String): RulePart =
-            if (input.matches("\"[a-z]\"".toRegex())) {
-                StringRulePart(input.substring(1, 2))
-            } else {
-                RuleNumberRulePart(input.toInt())
-            }
-    }
-}
-
-data class StringRulePart(val string: String) : RulePart() {
-    override fun toString() = "\"$string\""
-}
-
-data class RuleNumberRulePart(val ruleNumber: Int) : RulePart() {
-    override fun toString() = "$ruleNumber"
 }
 
