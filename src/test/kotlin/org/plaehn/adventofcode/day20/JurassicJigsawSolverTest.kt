@@ -23,6 +23,20 @@ class JurassicJigsawSolverTest {
         assertThat(product).isEqualTo(22878471088273)
     }
 
+    @Test
+    fun `Compute image for small input`() {
+        val solver = JurassicJigsawSolver.fromString(readInput("small_input.txt"))
+
+        solver.computeImage()
+    }
+
+    @Test
+    fun `Compute image for large input`() {
+        val solver = JurassicJigsawSolver.fromString(readInput("input.txt"))
+
+        solver.computeImage()
+    }
+
     private fun readInput(resourceName: String): String =
         JurassicJigsawSolver::class.java
             .getResource(resourceName)
