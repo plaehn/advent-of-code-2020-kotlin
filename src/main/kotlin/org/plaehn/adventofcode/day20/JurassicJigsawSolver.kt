@@ -7,9 +7,12 @@ import kotlin.math.sqrt
 
 class JurassicJigsawSolver(private val tiles: List<Tile>) {
 
-    fun computeImage() {
+    fun computeProductOfCornerTileIds(): Long = computeImage().getCornerIds().product()
+
+    fun computeImage(): TileGrid {
         val grid = TileGrid(computeEdgeLength(), computeUniqueBorders().keys.toSet())
         assert(canSolve(grid, Vector(0, 0), HashSet(tiles)))
+        return grid
     }
 
     private fun canSolve(grid: TileGrid, position: Vector, remainingTiles: Set<Tile>): Boolean {
@@ -41,15 +44,6 @@ class JurassicJigsawSolver(private val tiles: List<Tile>) {
     }
 
     private fun computeEdgeLength() = sqrt(tiles.count().toDouble()).toInt()
-
-    fun computeProductOfCornerTileIds(): Long = computeCorners().map { it.id }.product()
-
-    private fun computeCorners(): List<Tile> {
-        val uniqueBorders = computeUniqueBorders()
-        return tiles.filter { tile ->
-            4 == tile.computeAllBorders().count { uniqueBorders.contains(it) }
-        }
-    }
 
     private fun computeUniqueBorders(): Map<String, Int> {
         val allBorders = tiles.map { it.computeAllBorders() }.flatten()

@@ -49,4 +49,13 @@ class TileGrid(private val edgeLength: Int, private val uniqueBorders: Set<Strin
         (0 until edgeLength).contains(position.x) && (0 until edgeLength).contains(position.y)
 
     private fun isUnique(border: String): Boolean = uniqueBorders.contains(border)
+
+    fun getCornerIds() = listOf(
+        getTileIdAt(Vector(0, 0)),
+        getTileIdAt(Vector(0, edgeLength - 1)),
+        getTileIdAt(Vector(edgeLength - 1, 0)),
+        getTileIdAt(Vector(edgeLength - 1, edgeLength - 1))
+    )
+
+    private fun getTileIdAt(vector: Vector) = get(vector)?.id ?: 0
 }
