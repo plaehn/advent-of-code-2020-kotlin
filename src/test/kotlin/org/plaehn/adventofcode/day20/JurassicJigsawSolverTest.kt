@@ -27,14 +27,14 @@ class JurassicJigsawSolverTest {
     fun `Compute image for small input`() {
         val solver = JurassicJigsawSolver.fromString(readInput("small_input.txt"))
 
-        solver.computeImage()
+        solver.findCorrectTileArrangement()
     }
 
     @Test
     fun `Compute image for large input`() {
         val solver = JurassicJigsawSolver.fromString(readInput("input.txt"))
 
-        solver.computeImage()
+        solver.findCorrectTileArrangement()
     }
 
     private fun readInput(resourceName: String): String =

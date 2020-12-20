@@ -7,10 +7,18 @@ import kotlin.math.sqrt
 
 class JurassicJigsawSolver(private val tiles: List<Tile>) {
 
-    fun computeProductOfCornerTileIds(): Long = computeImage().getCornerIds().product()
+    private val edgeLength: Int = sqrt(tiles.count().toDouble()).toInt()
 
-    fun computeImage(): TileGrid {
-        val grid = TileGrid(computeEdgeLength(), computeUniqueBorders().keys.toSet())
+    private val uniqueBorders: Set<String> by lazy {
+        val allBorders = tiles.map { it.computeAllBorders() }.flatten()
+        val bordersWithCount = allBorders.groupingBy { it }.eachCount()
+        bordersWithCount.filter { it.value == 1 }.keys
+    }
+
+    fun computeProductOfCornerTileIds(): Long = findCorrectTileArrangement().getCornerIds().product()
+
+    fun findCorrectTileArrangement(): TileGrid {
+        val grid = TileGrid(edgeLength, uniqueBorders)
         assert(canSolve(grid, Vector(0, 0), HashSet(tiles)))
         return grid
     }
@@ -36,19 +44,11 @@ class JurassicJigsawSolver(private val tiles: List<Tile>) {
     private fun nextPosition(position: Vector): Vector {
         var newY = position.y
         var newX = position.x + 1
-        if (newX == computeEdgeLength()) {
+        if (newX == edgeLength) {
             newX = 0
             ++newY
         }
         return Vector(newX, newY)
-    }
-
-    private fun computeEdgeLength() = sqrt(tiles.count().toDouble()).toInt()
-
-    private fun computeUniqueBorders(): Map<String, Int> {
-        val allBorders = tiles.map { it.computeAllBorders() }.flatten()
-        val bordersWithCount = allBorders.groupingBy { it }.eachCount()
-        return bordersWithCount.filter { it.value == 1 }
     }
 
     override fun toString() = tiles.joinToString("\n\n")
