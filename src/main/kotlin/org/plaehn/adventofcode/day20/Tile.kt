@@ -43,7 +43,58 @@ data class Tile(val id: Long, val rows: List<String>) {
 
     override fun toString() = "Tile $id:\n${rows.joinToString("\n")}"
 
+    fun countWavesReplacedBySeaMonster(): Int = sequence {
+        (0 until width() - seaMonster.width()).forEach { x ->
+            (0 until height() - seaMonster.height()).forEach { y ->
+                if (matchesOtherTileAt(x, y, seaMonster)) {
+                    yield(countWavesReplacedBySeaMonster(x, y, seaMonster))
+                }
+            }
+        }
+    }.sum()
+
+    private fun matchesOtherTileAt(x: Int, y: Int, tile: Tile): Boolean {
+        (0 until tile.width()).forEach { xOffset ->
+            (0 until tile.height()).forEach { yOffset ->
+                val ownChar = rows[y + yOffset][x + xOffset]
+                val otherChar = tile.rows[yOffset][xOffset]
+                if (otherChar == '#' && ownChar != '#') {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    private fun countWavesReplacedBySeaMonster(x: Int, y: Int, tile: Tile): Int =
+        sequence {
+            (0 until tile.width()).forEach { xOffset ->
+                (0 until tile.height()).forEach { yOffset ->
+                    val ownChar = rows[y + yOffset][x + xOffset]
+                    val otherChar = tile.rows[yOffset][xOffset]
+                    if (otherChar == '#' && ownChar == '#') {
+                        yield(1)
+                    }
+                }
+            }
+        }.sum()
+
+    private fun width(): Int = rows.first().count()
+
+    private fun height(): Int = rows.count()
+
+    fun countWaves(): Int = rows.joinToString("").count { it == '#' }
+
     companion object {
+
+        val seaMonster = Tile(
+            666, listOf(
+                "                  # ",
+                "#    ##    ##    ###",
+                " #  #  #  #  #  #   "
+            )
+        )
+
         fun fromString(input: String): Tile {
             val lines = input.lines()
             val id = lines.first().split(' ', ':')[1].toLong()

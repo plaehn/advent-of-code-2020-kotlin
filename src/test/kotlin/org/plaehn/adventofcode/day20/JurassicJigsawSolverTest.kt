@@ -24,17 +24,21 @@ class JurassicJigsawSolverTest {
     }
 
     @Test
-    fun `Compute image for small input`() {
+    fun `Computer water roughness for small input`() {
         val solver = JurassicJigsawSolver.fromString(readInput("small_input.txt"))
 
-        solver.findCorrectTileArrangement()
+        val waterRoughness = solver.computeWaterRoughnessOfHabitat()
+
+        assertThat(waterRoughness).isEqualTo(273)
     }
 
     @Test
-    fun `Compute image for large input`() {
+    fun `Computer water roughness for large input`() {
         val solver = JurassicJigsawSolver.fromString(readInput("input.txt"))
 
-        solver.findCorrectTileArrangement()
+        val waterRoughness = solver.computeWaterRoughnessOfHabitat()
+
+        assertThat(waterRoughness).isEqualTo(1680)
     }
 
     private fun readInput(resourceName: String): String =

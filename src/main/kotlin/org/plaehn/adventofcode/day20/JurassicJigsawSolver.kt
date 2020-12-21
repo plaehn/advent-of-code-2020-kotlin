@@ -17,7 +17,16 @@ class JurassicJigsawSolver(private val tiles: List<Tile>) {
 
     fun computeProductOfCornerTileIds(): Long = findCorrectTileArrangement().getCornerIds().product()
 
-    fun findCorrectTileArrangement(): TileGrid {
+    fun computeWaterRoughnessOfHabitat(): Int =
+        findCorrectTileArrangement()
+            .getImage()
+            .variants()
+            .map { it to it.countWavesReplacedBySeaMonster() }
+            .filter { it.second > 0 }
+            .map { it.first.countWaves() - it.second }
+            .first()
+
+    private fun findCorrectTileArrangement(): TileGrid {
         val grid = TileGrid(edgeLength, uniqueBorders)
         assert(canSolve(grid, Vector(0, 0), HashSet(tiles)))
         return grid
