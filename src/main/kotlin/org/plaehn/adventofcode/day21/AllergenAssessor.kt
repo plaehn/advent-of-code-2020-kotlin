@@ -4,14 +4,15 @@ data class AllergenAssessor(val foods: List<Food>) {
 
     fun findAllergenFreeIngredients(): List<String> {
 
-        val allergenToPotentialContainer: Map<String, MutableSet<String>> =
+        val allergenToPotentialContainer: Map<String, Set<String>> =
             foods.fold(mutableMapOf()) { map, food ->
                 food.allergens.forEach { allergen ->
-                    if (!map.containsKey(allergen)) {
-                        map[allergen] = food.ingredients.toSet().toMutableSet()
-                    } else {
-                        map[allergen] = map[allergen]!!.intersect(food.ingredients).toMutableSet()
-                    }
+                    map[allergen] =
+                        if (map.containsKey(allergen)) {
+                            map[allergen]!! intersect food.ingredients
+                        } else {
+                            food.ingredients.toSet()
+                        }
                 }
                 map
             }
@@ -35,17 +36,15 @@ data class Food(val ingredients: List<String>, val allergens: List<String>) {
     companion object {
         fun fromString(input: String): Food {
             val ingredientsAndAllergens = input.split("(contains ", ")")
-            val ingredients = ingredientsAndAllergens[0]
-                .split(' ')
-                .map { it.trim() }
-                .filter { it.isNotBlank() }
-                .toList()
-            val allergens = ingredientsAndAllergens[1]
-                .split(", ")
-                .map { it.trim() }
-                .filter { it.isNotBlank() }
-                .toList()
+            val ingredients = ingredientsAndAllergens[0].splitByAndCleanUp(" ")
+            val allergens = ingredientsAndAllergens[1].splitByAndCleanUp(", ")
             return Food(ingredients, allergens)
         }
     }
 }
+
+private fun String.splitByAndCleanUp(separator: String): List<String> =
+    split(separator)
+        .map { it.trim() }
+        .filter { it.isNotBlank() }
+        .toList()
