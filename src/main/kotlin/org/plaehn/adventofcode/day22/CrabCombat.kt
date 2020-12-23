@@ -3,78 +3,102 @@ package org.plaehn.adventofcode.day22
 import org.plaehn.adventofcode.common.findUnique
 import org.plaehn.adventofcode.common.groupByBlankLines
 
-class CrabCombat(private var decks: List<Deck>) {
+class CrabCombat(
+    private val initialGame: Game,
+    private val isRecursive: Boolean
+) {
 
-    fun playUntilWeHaveAWinnerAndReturnScore(): Int {
-        var winner: Deck?
+    fun playUntilWeHaveMatchWinnerAndReturnScore(): Int = playGame(initialGame).computeScore()
+
+    private fun playGame(game: Game): Deck {
+        val seenGames = mutableSetOf<Game>()
+        var currentGame = game
         do {
-            playRound()
-            winner = determineWinner()
-        } while (winner == null)
-
-        return winner.computeScore()
-    }
-
-    private fun playRound() {
-        val playerToTopCard = decks
-            .filter { !it.isEmpty() }
-            .mapIndexed { _, deck ->
-                deck to deck.removeTopCard()
+            if (seenGames.contains(currentGame)) {
+                return currentGame.firstDeck()
             }
-        val roundWinner = playerToTopCard.maxByOrNull { it.second } ?: throw IllegalStateException()
-        val topCardsSortedDesc = playerToTopCard.map { it.second }.sortedByDescending { it }
-        roundWinner.first.addToBottom(topCardsSortedDesc)
+            seenGames.add(currentGame)
+
+            currentGame.determineMatchWinner()?.let { return it }
+            
+            val roundWinner = if (isRecursive && currentGame.allPlayersHaveEnoughCardsForRecursiveCombat()) {
+                playGame(currentGame.newRecursiveGameDeterminedByTopCard())
+            } else {
+                playRound(currentGame)
+            }
+
+            currentGame = currentGame.newGameFromWinner(roundWinner.player)
+        } while (true)
     }
 
-    private fun determineWinner(): Deck? = decks.findUnique { !it.isEmpty() }
+    private fun playRound(game: Game): Deck = game.deckWithHighestTopCard()
 
     companion object {
-        fun fromString(input: String): CrabCombat = CrabCombat(
-            input.groupByBlankLines().map { group ->
-                Deck.fromString(group)
-            }
+        fun fromString(input: String, isRecursive: Boolean = false): CrabCombat = CrabCombat(
+            Game(input.groupByBlankLines().mapIndexed() { player, group ->
+                Deck.fromString(player, group)
+            }),
+            isRecursive
         )
     }
 }
 
-class Deck(private var cards: MutableList<Int>) {
+data class Game(val decks: List<Deck>) {
 
-    fun removeTopCard(): Int = cards.removeFirst()
+    fun firstDeck() = decks.first()
 
-    fun addToBottom(newCards: List<Int>) {
-        cards.addAll(newCards)
+    fun allPlayersHaveEnoughCardsForRecursiveCombat() = decks.all { deck -> deck.topCard() <= deck.count() - 1 }
+
+    fun deckWithHighestTopCard(): Deck = decks.maxByOrNull { it.topCard() }!!
+
+    fun determineMatchWinner() = decks.findUnique { !it.isEmpty() }
+
+    fun newRecursiveGameDeterminedByTopCard() = Game(decks.map { it.newDeckDeterminedByTopCard() })
+
+    fun newGameFromWinner(winner: Int) = Game(
+        decks.mapIndexed() { player, deck ->
+            if (player == winner) {
+                Deck(player, newCardsForWinner(winner))
+            } else {
+                Deck(player, deck.dropFirst())
+            }
+        }
+    )
+
+    private fun newCardsForWinner(winner: Int): List<Int> {
+        val allOtherTopCards = decks
+            .filter { it.player != winner }
+            .map { it.topCard() }
+        return decks[winner].dropFirst() + listOf(decks[winner].topCard()) + allOtherTopCards
     }
+}
 
-    fun isEmpty(): Boolean = cards.isEmpty()
+data class Deck(val player: Int, private val cards: List<Int>) {
 
-    fun computeScore(): Int =
+    fun topCard() = cards.first()
+
+    fun newDeckDeterminedByTopCard() = Deck(player, cards.take(topCard() + 1).drop(1).toMutableList())
+
+    fun dropFirst() = cards.drop(1)
+
+    fun count() = cards.count()
+
+    fun isEmpty() = cards.isEmpty()
+
+    fun computeScore() =
         cards
             .reversed()
             .foldIndexed(0) { index, sum, card ->
                 sum + card * (index + 1)
             }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Deck
-
-        if (cards != other.cards) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int = cards.hashCode()
-
     companion object {
-        fun fromString(input: String): Deck = Deck(
+        fun fromString(player: Int, input: String) = Deck(player,
             input
                 .lines()
                 .drop(1)
                 .filter { it.isNotBlank() }
                 .map { it.toInt() }
-                .toMutableList()
         )
     }
 }
