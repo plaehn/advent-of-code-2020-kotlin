@@ -5,9 +5,33 @@ import com.ginsberg.cirkle.circular
 class CrabCups(private val input: String) {
 
     fun play(moves: Int, numberOfCups: Int = 9): List<Int> {
+        val seen = mutableMapOf<List<Int>, Int>()
+
         var cupCircle = buildInitialCupCircle(numberOfCups)
         var currentCupIndex = 0
-        repeat(moves) { move ->
+        var move = 0
+
+        var previousDiff = 0
+        while (move < moves) {
+
+            //if (move % 1000 == 0) println(LocalDateTime.now().toString() + "  Move $move")
+
+            val seenCircle = seen[cupCircle.toList()]
+            if (seenCircle != null) {
+                val diff = move - seenCircle
+                // cycle --> fast forward
+                if (diff == previousDiff) {
+                    println("Found cycle at move $move")
+                    val factor = (moves - move) / diff
+                    move += factor * diff
+                    println("Fast forward to $move")
+
+                }
+                previousDiff = diff
+            } else {
+                previousDiff = 0
+                seen[cupCircle.toList()] = move
+            }
 
 //            println("-- move ${move + 1} --")
 //            val cupOutput = cupCircle.mapIndexed { index, cup ->
@@ -27,6 +51,8 @@ class CrabCups(private val input: String) {
             cupCircle.addAll(destinationCupIndex + 1, pickedUpCups)
             cupCircle = shiftUntilCurrentCupIsAtCorrectPosition(cupCircle, currentCupIndex, currentCup)
             currentCupIndex++
+
+            ++move
         }
         return cupsAfterCupOne(cupCircle)
     }
