@@ -1,100 +1,111 @@
 package org.plaehn.adventofcode.day23
 
-import com.ginsberg.cirkle.circular
+class CrabCups(input: String, numberOfCups: Int) {
 
-class CrabCups(private val input: String) {
+    private val nodes: Array<Node>
 
-    fun play(moves: Int, numberOfCups: Int = 9): List<Int> {
-        val seen = mutableMapOf<List<Int>, Int>()
+    init {
+        this.nodes = createLinkedList(input, numberOfCups)
+    }
 
-        var cupCircle = buildInitialCupCircle(numberOfCups)
-        var currentCupIndex = 0
-        var move = 0
+    private fun createLinkedList(input: String, numberOfCups: Int): Array<Node> {
+        val nodes = Array(numberOfCups) { index ->
+            val label = if (index < input.count()) input[index].toDigit() else index + 1
+            Node(label, index + 1)
+        }
+        makeCircular(nodes, numberOfCups)
+        return nodes
+    }
 
-        var previousDiff = 0
-        while (move < moves) {
+    private fun makeCircular(nodes: Array<Node>, numberOfCups: Int) {
+        nodes[numberOfCups - 1].nextIdx = 0
+    }
 
-            //if (move % 1000 == 0) println(LocalDateTime.now().toString() + "  Move $move")
+    fun play(moves: Int): List<Int> {
+        var currentIndex = 0
+        repeat(moves) {
+            val (firstRemovedCupIndex, lastRemovedCupIndex) = removeThreeCupsAfter(currentIndex)
 
-            val seenCircle = seen[cupCircle.toList()]
-            if (seenCircle != null) {
-                val diff = move - seenCircle
-                // cycle --> fast forward
-                if (diff == previousDiff) {
-                    println("Found cycle at move $move")
-                    val factor = (moves - move) / diff
-                    move += factor * diff
-                    println("Fast forward to $move")
+            val destinationLabel = determineDestinationLabel(currentIndex, firstRemovedCupIndex)
+            val destinationIndex = getIndexForCup(destinationLabel)
 
+            addThreeCupsAfter(destinationIndex, firstRemovedCupIndex, lastRemovedCupIndex)
+
+            currentIndex = nodes[currentIndex].nextIdx
+        }
+        return firstEightCupsAfterCupOne()
+    }
+
+    private fun removeThreeCupsAfter(currentIndex: Int): Pair<Int, Int> {
+        val cutIdx = nodes[currentIndex].nextIdx
+        val cut2Idx = nodes[cutIdx].nextIdx
+        val cut3Idx = nodes[cut2Idx].nextIdx
+        val cutAfterIdx = nodes[cut3Idx].nextIdx
+
+        nodes[currentIndex].nextIdx = cutAfterIdx
+
+        return Pair(cutIdx, cut3Idx)
+    }
+
+    private fun determineDestinationLabel(currentIndex: Int, firstRemovedCupIndex: Int): Int {
+        var destinationLabel = nodes[currentIndex].label
+        do {
+            --destinationLabel
+            if (destinationLabel < 1) {
+                destinationLabel = numberOfCups()
+            }
+        } while (labelContainedInNextThreeNodes(destinationLabel, firstRemovedCupIndex))
+        return destinationLabel
+    }
+
+    private fun numberOfCups(): Int = nodes.count()
+
+    private fun labelContainedInNextThreeNodes(label: Int, index: Int): Boolean {
+        var nodeIndex = index
+        repeat(3) {
+            if (nodes[nodeIndex].label == label) {
+                return true
+            }
+            nodeIndex = nodes[nodeIndex].nextIdx
+        }
+        return false
+    }
+
+    private fun getIndexForCup(destinationLabel: Int): Int {
+        if (destinationLabel < 10) {
+            (0 until 9).forEach { index ->
+                if (nodes[index].label == destinationLabel) {
+                    return index
                 }
-                previousDiff = diff
-            } else {
-                previousDiff = 0
-                seen[cupCircle.toList()] = move
             }
-
-//            println("-- move ${move + 1} --")
-//            val cupOutput = cupCircle.mapIndexed { index, cup ->
-//                if (index == currentCupIndex) "($cup)" else "$cup"
-//            }.joinToString("  ")
-//            println("cups: $cupOutput")
-
-            val currentCup = cupCircle[currentCupIndex]
-            val pickedUpCups = pickUpCups(cupCircle, currentCupIndex)
-
-            // println("pick up: ${pickedUpCups.joinToString(", ")}")
-
-            val destinationCupIndex = findDestinationCup(currentCup, pickedUpCups, cupCircle)
-
-            // println("destination: ${cupCircle[destinationCupIndex]}")
-
-            cupCircle.addAll(destinationCupIndex + 1, pickedUpCups)
-            cupCircle = shiftUntilCurrentCupIsAtCorrectPosition(cupCircle, currentCupIndex, currentCup)
-            currentCupIndex++
-
-            ++move
+            throw IllegalStateException()
         }
-        return cupsAfterCupOne(cupCircle)
+        return destinationLabel - 1
     }
 
-    private fun buildInitialCupCircle(numberOfCups: Int): MutableList<Int> {
-        val cupsFromInput = input.map { it.toInt() - 48 }
-        val moreCups = (cupsFromInput.size + 1..numberOfCups)
-        return (cupsFromInput + moreCups).toMutableList().circular()
+    private fun addThreeCupsAfter(
+        destinationIndex: Int,
+        firstRemovedCupIndex: Int,
+        lastRemovedCupIndex: Int
+    ) {
+        val destinationAfterIndex = nodes[destinationIndex].nextIdx
+        nodes[destinationIndex].nextIdx = firstRemovedCupIndex
+        nodes[lastRemovedCupIndex].nextIdx = destinationAfterIndex
     }
 
-    private fun pickUpCups(cupCircle: MutableList<Int>, currentCupIndex: Int): List<Int> {
-        val pickedUpCups = (currentCupIndex + 1..currentCupIndex + 3).map { cupCircle[it] }.toList()
-        cupCircle.removeAll(pickedUpCups)
-        return pickedUpCups
-    }
-
-    private fun findDestinationCup(currentCupLabel: Int, pickedUpCups: List<Int>, cupCircle: MutableList<Int>): Int {
-        var destinationCupLabel = previousCupLabel(currentCupLabel, cupCircle)
-        while (pickedUpCups.contains(destinationCupLabel)) {
-            destinationCupLabel--
-            if (destinationCupLabel == 0) {
-                destinationCupLabel = cupCircle.count() + 3
-            }
+    private fun firstEightCupsAfterCupOne(): List<Int> {
+        var index = getIndexForCup(1)
+        return (0 until 8).map {
+            index = nodes[index].nextIdx
+            nodes[index].label
         }
-        return cupCircle.indexOf(destinationCupLabel)
     }
+}
 
-    private fun previousCupLabel(cupLabel: Int, cupCircle: MutableList<Int>): Int =
-        if (cupLabel == 1) cupCircle.count() + 3 else cupLabel - 1
+private fun Char.toDigit(): Int = this.toInt() - 48
 
-    private fun shiftUntilCurrentCupIsAtCorrectPosition(
-        cupCircle: MutableList<Int>,
-        currentCupIndex: Int,
-        currentCup: Int
-    ): MutableList<Int> {
-        val newCurrentCupIndex = cupCircle.indexOf(currentCup)
-        val offset = newCurrentCupIndex - currentCupIndex
-        return (0 until cupCircle.count()).map { index ->
-            cupCircle[index + offset]
-        }.toMutableList().circular()
+class Node(val label: Int, var nextIdx: Int) {
+    override fun toString(): String {
+        return "Node(label=$label, nextIdx=$nextIdx)"
     }
-
-    private fun cupsAfterCupOne(cupCircle: MutableList<Int>) =
-        (1 until 9).map { cupCircle[it + cupCircle.indexOf(1)] }
 }

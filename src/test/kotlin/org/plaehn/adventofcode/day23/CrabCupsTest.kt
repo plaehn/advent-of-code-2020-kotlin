@@ -8,7 +8,7 @@ class CrabCupsTest {
 
     @Test
     fun `Play crab cups for 10 moves for test input`() {
-        val crabCups = CrabCups("389125467")
+        val crabCups = CrabCups("389125467", 9)
 
         val cupsAfterCupOne = crabCups.play(10).joinToString("")
 
@@ -17,26 +17,16 @@ class CrabCupsTest {
 
     @Test
     fun `Play crab cups for 100 moves for test input`() {
-        val crabCups = CrabCups("389125467")
+        val crabCups = CrabCups("389125467", 9)
 
         val cupsAfterCupOne = crabCups.play(100).joinToString("")
 
         assertThat(cupsAfterCupOne).isEqualTo("67384529")
     }
 
-    // XXX
-    @Test
-    fun `Play crab cups for 1000000 moves for test input`() {
-        val crabCups = CrabCups("389125467")
-
-        val cupsAfterCupOne = crabCups.play(1000000).joinToString("")
-
-        assertThat(cupsAfterCupOne).isEqualTo("59724368")
-    }
-
     @Test
     fun `Play crab cups for 100 moves for real input`() {
-        val crabCups = CrabCups("643719258")
+        val crabCups = CrabCups("643719258", 9)
 
         val cupsAfterCupOne = crabCups.play(100).joinToString("")
 
@@ -45,26 +35,21 @@ class CrabCupsTest {
 
     @Test
     fun `Play crab cups for 10000000 moves for test input`() {
-        val crabCups = CrabCups("389125467")
+        val crabCups = CrabCups("389125467", 1000000)
 
-        //     7s for  100
-        // 1m 10s for 1000
-        val productOfTwoCupsAfterOne = crabCups.play(10000000, 1000000).take(2).product()
+        val afterCupOne = crabCups.play(10000000)
+        val productOfTwoCupsAfterOne = afterCupOne.take(2).map { it.toLong() }.product()
 
         assertThat(productOfTwoCupsAfterOne).isEqualTo(149245887792)
     }
 
     @Test
-    fun `Diffs are the same`() {
-        val distinctDiffs = readInput("diffs.txt").zipWithNext().map { it.second - it.first }.distinct()
-        println(distinctDiffs)
-    }
+    fun `Play crab cups for 10000000 moves for real input`() {
+        val crabCups = CrabCups("643719258", 1000000)
 
-    private fun readInput(resourceName: String): List<Int> =
-        CrabCups::class.java
-            .getResource(resourceName)
-            .readText()
-            .lines()
-            .filter { it.isNotBlank() }
-            .map { it.toInt() }
+        val afterCupOne = crabCups.play(10000000)
+        val productOfTwoCupsAfterOne = afterCupOne.take(2).map { it.toLong() }.product()
+
+        assertThat(productOfTwoCupsAfterOne).isEqualTo(146304752384)
+    }
 }
