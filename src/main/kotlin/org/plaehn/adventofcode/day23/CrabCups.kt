@@ -4,18 +4,37 @@ import com.ginsberg.cirkle.circular
 
 class CrabCups(private val input: String) {
 
-    fun play(moves: Int): String {
-        var cupCircle = input.map { it.toInt() - 48 }.toMutableList().circular()
+    fun play(moves: Int, numberOfCups: Int = 9): List<Int> {
+        var cupCircle = buildInitialCupCircle(numberOfCups)
         var currentCupIndex = 0
-        repeat(moves) {
+        repeat(moves) { move ->
+
+//            println("-- move ${move + 1} --")
+//            val cupOutput = cupCircle.mapIndexed { index, cup ->
+//                if (index == currentCupIndex) "($cup)" else "$cup"
+//            }.joinToString("  ")
+//            println("cups: $cupOutput")
+
             val currentCup = cupCircle[currentCupIndex]
             val pickedUpCups = pickUpCups(cupCircle, currentCupIndex)
-            val destinationCupIndex = findDestinationCup(currentCup, cupCircle)
+
+            // println("pick up: ${pickedUpCups.joinToString(", ")}")
+
+            val destinationCupIndex = findDestinationCup(currentCup, pickedUpCups, cupCircle)
+
+            // println("destination: ${cupCircle[destinationCupIndex]}")
+
             cupCircle.addAll(destinationCupIndex + 1, pickedUpCups)
             cupCircle = shiftUntilCurrentCupIsAtCorrectPosition(cupCircle, currentCupIndex, currentCup)
             currentCupIndex++
         }
         return cupsAfterCupOne(cupCircle)
+    }
+
+    private fun buildInitialCupCircle(numberOfCups: Int): MutableList<Int> {
+        val cupsFromInput = input.map { it.toInt() - 48 }
+        val moreCups = (cupsFromInput.size + 1..numberOfCups)
+        return (cupsFromInput + moreCups).toMutableList().circular()
     }
 
     private fun pickUpCups(cupCircle: MutableList<Int>, currentCupIndex: Int): List<Int> {
@@ -24,18 +43,19 @@ class CrabCups(private val input: String) {
         return pickedUpCups
     }
 
-    private fun findDestinationCup(currentCupLabel: Int, cupCircle: MutableList<Int>): Int {
-        var destinationCupLabel = currentCupLabel - 1
-        var destinationCupIndex: Int
-        do {
-            destinationCupIndex = cupCircle.indexOf(destinationCupLabel)
+    private fun findDestinationCup(currentCupLabel: Int, pickedUpCups: List<Int>, cupCircle: MutableList<Int>): Int {
+        var destinationCupLabel = previousCupLabel(currentCupLabel, cupCircle)
+        while (pickedUpCups.contains(destinationCupLabel)) {
             destinationCupLabel--
-            if (destinationCupLabel < 0) {
-                destinationCupLabel = 9
+            if (destinationCupLabel == 0) {
+                destinationCupLabel = cupCircle.count() + 3
             }
-        } while (destinationCupIndex < 0)
-        return destinationCupIndex
+        }
+        return cupCircle.indexOf(destinationCupLabel)
     }
+
+    private fun previousCupLabel(cupLabel: Int, cupCircle: MutableList<Int>): Int =
+        if (cupLabel == 1) cupCircle.count() + 3 else cupLabel - 1
 
     private fun shiftUntilCurrentCupIsAtCorrectPosition(
         cupCircle: MutableList<Int>,
@@ -50,5 +70,5 @@ class CrabCups(private val input: String) {
     }
 
     private fun cupsAfterCupOne(cupCircle: MutableList<Int>) =
-        (1 until 9).map { cupCircle[it + cupCircle.indexOf(1)] }.joinToString("")
+        (1 until 9).map { cupCircle[it + cupCircle.indexOf(1)] }
 }
