@@ -20,37 +20,29 @@ class LobbyLayout(private val instructions: List<List<Direction>>) {
 
     private fun computeNextGrid(grid: Grid<Color>) = Grid(
         grid.enumerateCubesSpannedBy(grid.min() - 1, grid.max() + 1)
-            .filter { 0 == it.values.sum() }
+            .filter { isCubeCoordinate(it) }
             .map { position -> position to computeNewColor(position, grid) }
             .toMap().toMutableMap()
     )
 
+    private fun isCubeCoordinate(position: Vector) = 0 == position.values.sum()
+
     private fun computeNewColor(position: Vector, grid: Grid<Color>): Color {
-        val numberOfBlackNeighbors = position
+        val blackNeighbors = position
             .neighbors()
-            .filter { 0 == it.values.sum() }
+            .filter { isCubeCoordinate(it) }
             .count { grid[it] == BLACK }
         return if (grid[position] == BLACK) {
-            if (numberOfBlackNeighbors == 0 || numberOfBlackNeighbors > 2) {
-                WHITE
-            } else {
-                BLACK
-            }
+            if (blackNeighbors == 0 || blackNeighbors > 2) WHITE else BLACK
         } else {
-            if (numberOfBlackNeighbors == 2) {
-                BLACK
-            } else {
-                WHITE
-            }
+            if (blackNeighbors == 2) BLACK else WHITE
         }
     }
 
     fun applyInstructions(): Int =
         instructions
             .forEach { instruction -> visitTile(instruction) }
-            .let { return countBlackTiles(tileGrid) }
-
-    private fun countBlackTiles(grid: Grid<Color>) = grid.values().count { it == BLACK }
+            .let { return tileGrid.values().count { it == BLACK } }
 
     private fun visitTile(directions: List<Direction>) {
         var position = Vector(0, 0, 0)
