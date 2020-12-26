@@ -10,11 +10,12 @@ class LobbyLayout(private val instructions: List<List<Direction>>) {
 
     private var tileGrid: Grid<Color> = Grid(mutableMapOf())
 
-    fun applyInstructions(): Int {
-        instructions.forEach { instruction -> visitTile(instruction) }
+    fun applyInstructions(): Int =
+        instructions
+            .forEach { instruction -> visitTile(instruction) }
+            .let { return countBlackTiles() }
 
-        return tileGrid.values().count { it == BLACK }
-    }
+    private fun countBlackTiles() = tileGrid.values().count { it == BLACK }
 
     private fun visitTile(directions: List<Direction>) {
         var position = Vector(0, 0)
