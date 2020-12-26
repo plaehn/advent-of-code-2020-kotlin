@@ -47,11 +47,6 @@
             <version>0.4.0</version>
         </dependency>
         <dependency>
-            <groupId>com.ginsberg</groupId>
-            <artifactId>cirkle</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test-junit</artifactId>
             <version>${kotlin.version}</version>
