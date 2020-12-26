@@ -2,6 +2,7 @@ package org.plaehn.adventofcode.day17
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.plaehn.adventofcode.common.Grid
 
 class ElvesEnergySourceTest {
 
