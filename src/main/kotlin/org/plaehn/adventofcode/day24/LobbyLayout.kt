@@ -8,21 +8,17 @@ import org.plaehn.adventofcode.day24.Direction.*
 
 class LobbyLayout(private val instructions: List<List<Direction>>) {
 
-    private var tileGrid: Grid<Color> = Grid(mutableMapOf())
-
-    fun livingArt(numberOfCycles: Int): Int {
-        applyInstructions()
-        return (1..numberOfCycles)
-            .fold(tileGrid) { currentGrid, _ -> computeNextGrid(currentGrid) }
+    fun livingArt(numberOfCycles: Int): Int =
+        (1..numberOfCycles)
+            .fold(applyInstructions()) { currentGrid, _ -> computeNextGrid(currentGrid) }
             .values()
             .count { it == BLACK }
-    }
 
     private fun computeNextGrid(grid: Grid<Color>) = Grid(
         grid.enumerateCubesSpannedBy(grid.min() - 1, grid.max() + 1)
             .filter { isCubeCoordinate(it) }
             .map { position -> position to computeNewColor(position, grid) }
-            .toMap().toMutableMap()
+            .toMap()
     )
 
     private fun isCubeCoordinate(position: Vector) = 0 == position.values.sum()
@@ -39,18 +35,23 @@ class LobbyLayout(private val instructions: List<List<Direction>>) {
         }
     }
 
-    fun applyInstructions(): Int =
-        instructions
-            .forEach { instruction -> visitTile(instruction) }
-            .let { return tileGrid.values().count { it == BLACK } }
+    fun applyInstructionsAndCountBlackTiles(): Int =
+        applyInstructions()
+            .values()
+            .count { it == BLACK }
 
-    private fun visitTile(directions: List<Direction>) {
-        var position = Vector(0, 0, 0)
-        directions.forEach { direction -> position += direction.offset }
-        tileGrid[position] = when (tileGrid[position]) {
-            null, WHITE -> BLACK
-            BLACK -> WHITE
-        }
+    private fun applyInstructions() =
+        instructions
+            .fold(Grid<Color>(mapOf())) { currentGrid, instruction -> visitTile(currentGrid, instruction) }
+
+    private fun visitTile(grid: Grid<Color>, directions: List<Direction>): Grid<Color> {
+        val position = directions.fold(Vector(0, 0, 0)) { position, direction -> position + direction.offset }
+        return grid.updated(
+            position, when (grid[position]) {
+                null, WHITE -> BLACK
+                BLACK -> WHITE
+            }
+        )
     }
 
     companion object {

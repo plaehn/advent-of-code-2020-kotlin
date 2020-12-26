@@ -10,7 +10,7 @@ class LobbyLayoutTest {
     fun `Apply instructions in small input`() {
         val lobbyLayout = LobbyLayout.fromString(readInput("small_input.txt"))
 
-        val numberOfBlackTiles = lobbyLayout.applyInstructions()
+        val numberOfBlackTiles = lobbyLayout.applyInstructionsAndCountBlackTiles()
 
         assertThat(numberOfBlackTiles).isEqualTo(10)
     }
@@ -19,7 +19,7 @@ class LobbyLayoutTest {
     fun `Apply instructions in large input`() {
         val lobbyLayout = LobbyLayout.fromString(readInput("input.txt"))
 
-        val numberOfBlackTiles = lobbyLayout.applyInstructions()
+        val numberOfBlackTiles = lobbyLayout.applyInstructionsAndCountBlackTiles()
 
         assertThat(numberOfBlackTiles).isEqualTo(300)
     }

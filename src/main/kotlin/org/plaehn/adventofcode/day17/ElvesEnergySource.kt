@@ -14,7 +14,7 @@ class ElvesEnergySource(private val initialGrid: Grid<Boolean>) {
     private fun computeNextGrid(grid: Grid<Boolean>) = Grid(
         grid.enumerateCubesSpannedBy(grid.min() - 1, grid.max() + 1)
             .map { position -> position to computeNewIsActive(position, grid) }
-            .toMap().toMutableMap()
+            .toMap()
     )
 
     private fun computeNewIsActive(position: Vector, grid: Grid<Boolean>): Boolean {

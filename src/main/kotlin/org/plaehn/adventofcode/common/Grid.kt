@@ -2,7 +2,7 @@ package org.plaehn.adventofcode.common
 
 import com.google.common.collect.Sets
 
-data class Grid<T>(private var data: MutableMap<Vector, T>) {
+data class Grid<T>(private val data: Map<Vector, T>) {
 
     fun min(): Vector = Vector((0 until dimensions())
                                    .map { index -> data.keys.minOf { vector -> vector[index] } }
@@ -16,8 +16,14 @@ data class Grid<T>(private var data: MutableMap<Vector, T>) {
 
     operator fun get(position: Vector): T? = data[position]
 
-    operator fun set(position: Vector, value: T) {
-        data[position] = value
+    fun updated(positionToUpdate: Vector, newValue: T): Grid<T> {
+        val entries = data.entries.map { (position, value) ->
+            position to if (position == positionToUpdate) newValue else value
+        }.toMutableList()
+        if (!data.containsKey(positionToUpdate)) {
+            entries.add(positionToUpdate to newValue)
+        }
+        return Grid(entries.toMap())
     }
 
     fun values() = data.values
@@ -36,7 +42,7 @@ data class Grid<T>(private var data: MutableMap<Vector, T>) {
                         yield(vector to active)
                     }
                 }
-            }.toMap().toMutableMap()
+            }.toMap()
         )
     }
 }
