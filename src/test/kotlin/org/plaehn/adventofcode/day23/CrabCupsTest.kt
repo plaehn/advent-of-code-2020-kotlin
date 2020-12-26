@@ -1,6 +1,7 @@
 package org.plaehn.adventofcode.day23
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.plaehn.adventofcode.common.product
 
@@ -34,6 +35,7 @@ class CrabCupsTest {
     }
 
     @Test
+    @Disabled("Runs too long")
     fun `Play crab cups for 10000000 moves for test input`() {
         val crabCups = CrabCups("389125467", 1000000)
 
@@ -44,6 +46,7 @@ class CrabCupsTest {
     }
 
     @Test
+    @Disabled("Runs too long")
     fun `Play crab cups for 10000000 moves for real input`() {
         val crabCups = CrabCups("643719258", 1000000)
 
