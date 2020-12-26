@@ -10,9 +10,9 @@ class LobbyLayout(private val instructions: List<List<Direction>>) {
 
     private var tileGrid: Grid<Color> = Grid(mutableMapOf())
 
-    fun livingArt(): Int {
+    fun livingArt(numberOfCycles: Int): Int {
         applyInstructions()
-        return (1..100)
+        return (1..numberOfCycles)
             .fold(tileGrid) { currentGrid, _ -> computeNextGrid(currentGrid) }
             .values()
             .count { it == BLACK }
