@@ -10,15 +10,50 @@ class LobbyLayout(private val instructions: List<List<Direction>>) {
 
     private var tileGrid: Grid<Color> = Grid(mutableMapOf())
 
+    fun livingArt(): Int {
+        applyInstructions()
+        return (1..100)
+            .fold(tileGrid) { currentGrid, _ -> computeNextGrid(currentGrid) }
+            .values()
+            .count { it == BLACK }
+    }
+
+    private fun computeNextGrid(grid: Grid<Color>) = Grid(
+        grid.enumerateCubesSpannedBy(grid.min() - 1, grid.max() + 1)
+            .filter { 0 == it.values.sum() }
+            .map { position -> position to computeNewColor(position, grid) }
+            .toMap().toMutableMap()
+    )
+
+    private fun computeNewColor(position: Vector, grid: Grid<Color>): Color {
+        val numberOfBlackNeighbors = position
+            .neighbors()
+            .filter { 0 == it.values.sum() }
+            .count { grid[it] == BLACK }
+        return if (grid[position] == BLACK) {
+            if (numberOfBlackNeighbors == 0 || numberOfBlackNeighbors > 2) {
+                WHITE
+            } else {
+                BLACK
+            }
+        } else {
+            if (numberOfBlackNeighbors == 2) {
+                BLACK
+            } else {
+                WHITE
+            }
+        }
+    }
+
     fun applyInstructions(): Int =
         instructions
             .forEach { instruction -> visitTile(instruction) }
-            .let { return countBlackTiles() }
+            .let { return countBlackTiles(tileGrid) }
 
-    private fun countBlackTiles() = tileGrid.values().count { it == BLACK }
+    private fun countBlackTiles(grid: Grid<Color>) = grid.values().count { it == BLACK }
 
     private fun visitTile(directions: List<Direction>) {
-        var position = Vector(0, 0)
+        var position = Vector(0, 0, 0)
         directions.forEach { direction -> position += direction.offset }
         tileGrid[position] = when (tileGrid[position]) {
             null, WHITE -> BLACK
