@@ -3,56 +3,59 @@ package org.plaehn.adventofcode.day17
 import com.google.common.collect.Sets
 import org.plaehn.adventofcode.common.Vector
 
-class ElvesEnergySource(private val initialGrid: Grid) {
+class ElvesEnergySource(private val initialGrid: Grid<Boolean>) {
 
     fun countActiveCubesAfterBootProcess(numberOfCycles: Int): Int =
         (1..numberOfCycles)
             .fold(initialGrid) { currentGrid, _ -> computeNextGrid(currentGrid) }
-            .numberOfActiveCubes()
+            .values()
+            .count { it }
 
-    private fun computeNextGrid(grid: Grid) = Grid(
+    private fun computeNextGrid(grid: Grid<Boolean>) = Grid(
         grid.enumerateCubesSpannedBy(grid.min() - 1, grid.max() + 1)
             .map { position -> position to computeNewIsActive(position, grid) }
             .toMap()
     )
 
-    private fun computeNewIsActive(position: Vector, grid: Grid): Boolean {
-        val numberOfActiveNeighbors = position.neighbors().count { grid.isActive(it) }
-        return if (grid.isActive(position)) {
+    private fun computeNewIsActive(position: Vector, grid: Grid<Boolean>): Boolean {
+        val numberOfActiveNeighbors = position.neighbors().count { isActive(grid, it) }
+        return if (isActive(grid, position)) {
             (2..3).contains(numberOfActiveNeighbors)
         } else {
             numberOfActiveNeighbors == 3
         }
     }
+
+    private fun isActive(grid: Grid<Boolean>, position: Vector) = grid.valueAt(position) ?: false
 }
 
-data class Grid(val cubes: Map<Vector, Boolean>) {
+data class Grid<T>(val initialData: Map<Vector, T>) {
 
-    fun min(): Vector = Vector((0 until dimension())
-                                   .map { index -> cubes.keys.minOf { vector -> vector[index] } }
+    fun min(): Vector = Vector((0 until dimensions())
+                                   .map { index -> initialData.keys.minOf { vector -> vector[index] } }
                                    .toList())
 
-    fun max(): Vector = Vector((0 until dimension())
-                                   .map { index -> cubes.keys.maxOf { vector -> vector[index] } }
+    fun max(): Vector = Vector((0 until dimensions())
+                                   .map { index -> initialData.keys.maxOf { vector -> vector[index] } }
                                    .toList())
 
-    private fun dimension(): Int = cubes.keys.first().dimension()
+    private fun dimensions(): Int = initialData.keys.first().dimension()
 
-    fun isActive(position: Vector): Boolean = cubes[position] ?: false
+    fun valueAt(position: Vector): T? = initialData[position]
 
-    fun numberOfActiveCubes(): Int = cubes.values.count { it }
+    fun values() = initialData.values
 
     fun enumerateCubesSpannedBy(min: Vector, max: Vector) =
         Sets
-            .cartesianProduct((0 until dimension()).map { (min[it]..max[it]).toSet() })
+            .cartesianProduct((0 until dimensions()).map { (min[it]..max[it]).toSet() })
             .map { Vector(it) }
 
     companion object {
-        fun from2DInput(dimensions: Int, lines: List<String>): Grid = Grid(
+        fun <T> from2DInput(dimensions: Int, lines: List<String>, charToValue: (Char) -> T): Grid<T> = Grid(
             sequence {
                 lines.forEachIndexed { x, line ->
                     line.forEachIndexed { y, state ->
-                        val active = state == '#'
+                        val active = charToValue(state)
                         val vector = Vector(listOf(x, y) + List(dimensions - 2) { 0 })
                         yield(vector to active)
                     }

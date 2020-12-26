@@ -5,9 +5,17 @@ import org.junit.jupiter.api.Test
 
 class ElvesEnergySourceTest {
 
+    private val charToActive: (Char) -> Boolean = { it == '#' }
+
     @Test
     fun `Count active cubes in 3D after boot process for small input`() {
-        val elvesEnergySource = ElvesEnergySource(Grid.from2DInput(dimensions = 3, readInput("small_input.txt")))
+        val elvesEnergySource = ElvesEnergySource(
+            Grid.from2DInput(
+                dimensions = 3,
+                lines = readInput("small_input.txt"),
+                charToValue = charToActive
+            )
+        )
 
         val numberOfActiveCubes = elvesEnergySource.countActiveCubesAfterBootProcess(6)
 
@@ -16,7 +24,13 @@ class ElvesEnergySourceTest {
 
     @Test
     fun `Count active cubes in 3D after boot process for large input`() {
-        val elvesEnergySource = ElvesEnergySource(Grid.from2DInput(dimensions = 3, readInput("input.txt")))
+        val elvesEnergySource = ElvesEnergySource(
+            Grid.from2DInput(
+                dimensions = 3,
+                lines = readInput("input.txt"),
+                charToValue = charToActive
+            )
+        )
 
         val numberOfActiveCubes = elvesEnergySource.countActiveCubesAfterBootProcess(6)
 
@@ -25,7 +39,13 @@ class ElvesEnergySourceTest {
 
     @Test
     fun `Count active cubes in 4D after boot process for small input`() {
-        val elvesEnergySource = ElvesEnergySource(Grid.from2DInput(dimensions = 4, readInput("small_input.txt")))
+        val elvesEnergySource = ElvesEnergySource(
+            Grid.from2DInput(
+                dimensions = 4,
+                lines = readInput("small_input.txt"),
+                charToValue = charToActive
+            )
+        )
 
         val numberOfActiveCubes = elvesEnergySource.countActiveCubesAfterBootProcess(6)
 
@@ -34,7 +54,14 @@ class ElvesEnergySourceTest {
 
     @Test
     fun `Count active cubes in 4D after boot process for large input`() {
-        val elvesEnergySource = ElvesEnergySource(Grid.from2DInput(dimensions = 4, readInput("input.txt")))
+
+        val elvesEnergySource = ElvesEnergySource(
+            Grid.from2DInput(
+                dimensions = 4,
+                lines = readInput("input.txt"),
+                charToValue = charToActive
+            )
+        )
 
         val numberOfActiveCubes = elvesEnergySource.countActiveCubesAfterBootProcess(6)
 
